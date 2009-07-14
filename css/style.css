@@ -1,0 +1,170 @@
+
+#icon-wp-native-dashboard { background:transparent url(../img/icon/settings.png) no-repeat scroll left top; }
+
+/* language switcher styles */
+#csp-langswitcher-actions { 
+	padding: 0px;
+	position:relative;
+	top: 11px;
+	left: 10px;
+	margin-right:20px;
+	width: 100px;
+}
+*:first-child + html #csp-langswitcher-actions { z-index: 103; }
+
+#csp-langswitcher-current {
+	padding: 4px 90px 4px 3px;
+	background:#797979 url(../img/fav.png) repeat-x scroll 0 center; 
+	line-height: 14px;
+	vertical-align: middle;
+	border-color:#777777 #777777 #666666 !important; 
+	-moz-border-radius: 12px;
+	-khtml-border-radius: 12px;
+	-webkit-border-radius: 12px;
+	border-radius: 12px;
+	border-style:solid;
+	border-width:1px;
+}
+#csp-langswitcher-actions .slide-down { 
+	background:#797979 url(../img/fav-top.png) repeat-x scroll 0 center; 
+	-moz-border-radius: 12px 12px 0 0;
+	-webkit-border-bottom-right-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+	-khtml-border-bottom-right-radius: 0;
+	-khtml-border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom-left-radius: 0;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+#csp-langswitcher-current span {
+	font-size: 10px; /* font-family: monospace; */ margin:0;padding:0; padding-left: 24px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px top; color: #ddd;
+}
+*:first-child + html #csp-langswitcher-current,
+*:first-child + html #csp-langswitcher-current span  {zoom: 100%; } /* IE hack */
+
+#csp-langswitcher-toggle {
+	background:transparent url(../img/fav-arrow.png) no-repeat scroll 0 -4px;
+	height:22px;
+	position:absolute;
+	right:0;
+	top:1px;
+	width:28px;
+}
+
+#csp-langoptions { 
+	border-color: #797979;
+	background: #797979 url(../img/fav-bottom.png) repeat-x 0 bottom;
+	z-index: 102; 
+	position: absolute; 
+	display: none;
+	padding: 3px; 
+	padding-bottom: 6px;
+	font-size: 10px; 
+/*	font-family: 	monospace;  */
+	-moz-border-radius: 0 0 12px 12px;
+	-webkit-border-bottom-right-radius: 12px;
+	-webkit-border-bottom-left-radius: 12px;
+	-khtml-border-bottom-right-radius: 12px;
+	-khtml-border-bottom-left-radius: 12px;
+	border-bottom-right-radius: 12px;
+	border-bottom-left-radius: 12px;
+	border-color: #797979;
+	border-style:solid;
+	border-width:1px;
+}
+	
+.csp-langoption { display: block; text-decoration: none !important; color:#ddd; padding: 0px 0px 0px 0px;  margin-bottom: 6px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px 3px;}
+.csp-langoption span { padding-left: 24px;} 
+a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
+
+.lang-installed { background-color: #E7F7D3 !important; }
+
+.csp-read-more { border-top: 1px dotted #aaa !important; padding:10px 0px 5px 0px !important; font-size:10px !important; }
+.csp-copyright { font-size:8px !important; color: #aaa; margin-top: -25px; margin-right: 10px; }
+.csp-warning { color: #C00; }
+
+.i18n-file { font-size: 10px; /* font-family: monospace; */ height: 18px; padding-left: 24px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px top;}
+
+.csp-af, 
+.csp-af_AF { background:transparent url(../img/countries/af.gif) no-repeat 2px top !important; } 
+.csp-bn_BD { background:transparent url(../img/countries/bd.gif) no-repeat 2px top !important; }
+.csp-bg_BG { background:transparent url(../img/countries/bg.gif) no-repeat 2px top !important; }
+.csp-zh_CN { background:transparent url(../img/countries/cn.gif) no-repeat 2px top !important; }
+.csp-zh_HK { background:transparent url(../img/countries/hk.gif) no-repeat 2px top !important; }
+.csp-zh_TW { background:transparent url(../img/countries/tw.gif) no-repeat 2px top !important; }
+.csp-cs_CZ { background:transparent url(../img/countries/cz.gif) no-repeat 2px top !important; }
+.csp-da_DK { background:transparent url(../img/countries/dk.gif) no-repeat 2px top !important; }
+.csp-de, 
+.csp-de_DE { background:transparent url(../img/countries/de.gif) no-repeat 2px top !important; }
+.csp-nl_NL { background:transparent url(../img/countries/nl.gif) no-repeat 2px top !important; }
+.csp-cy, 
+.csp-el_CY { background:transparent url(../img/countries/cy.gif) no-repeat 2px top !important; }
+.csp-el, 
+.csp-el_GR { background:transparent url(../img/countries/gr.gif) no-repeat 2px top !important; }
+.csp-en_US { background:transparent url(../img/countries/us.gif) no-repeat 2px top !important; }
+.csp-eo, 
+.csp-eo_EO  { background:transparent url(../img/countries/eo.gif) no-repeat 2px top !important; }
+.csp-es, 
+.csp-es_ES, 
+.csp-gl_ES, 
+.csp-ca 	     { background:transparent url(../img/countries/es.gif) no-repeat 2px top !important; }
+.csp-et, 
+.csp-et_EE  { background:transparent url(../img/countries/ee.gif) no-repeat 2px top !important; }
+.csp-eu, 
+.csp-eu_ES { background:transparent url(../img/countries/eu.gif) no-repeat 2px top !important; }
+.csp-fa_IR { background:transparent url(../img/countries/ir.gif) no-repeat 2px top !important; }
+.csp-fi, 
+.csp-fi_FI { background:transparent url(../img/countries/fi.gif) no-repeat 2px top !important; }
+.csp-fo, 
+.csp-fo_FO { background:transparent url(../img/countries/fo.gif) no-repeat 2px top !important; }
+.csp-fr_FR { background:transparent url(../img/countries/fr.gif) no-repeat 2px top !important; }
+.csp-fr_BE { background:transparent url(../img/countries/be.gif) no-repeat 2px top !important; }
+.csp-he_IL { background:transparent url(../img/countries/il.gif) no-repeat 2px top !important; }
+.csp-hi_IN, 
+.csp-ml_IN, 
+.csp-ta_IN { background:transparent url(../img/countries/in.gif) no-repeat 2px top !important; }
+.csp-hr, 
+.csp-hr_HR { background:transparent url(../img/countries/hr.gif) no-repeat 2px top !important; }
+.csp-hu_HU { background:transparent url(../img/countries/hu.gif) no-repeat 2px top !important; }
+.csp-id_ID, 
+.csp-su_ID { background:transparent url(../img/countries/id.gif) no-repeat 2px top !important; }
+.csp-it_IT { background:transparent url(../img/countries/it.gif) no-repeat 2px top !important; }
+.csp-ja, 
+.csp-ja_JP { background:transparent url(../img/countries/jp.gif) no-repeat 2px top !important; }
+.csp-ko_KR { background:transparent url(../img/countries/kr.gif) no-repeat 2px top !important; }
+.csp-ky_KY { background:transparent url(../img/countries/ky.gif) no-repeat 2px top !important; }
+.csp-lv, 
+.csp-lv_LV { background:transparent url(../img/countries/lv.gif) no-repeat 2px top !important; }
+.csp-mk_MK { background:transparent url(../img/countries/mk.gif) no-repeat 2px top !important; }
+.csp-ms_MY { background:transparent url(../img/countries/my.gif) no-repeat 2px top !important; }
+.csp-my_MM { background:transparent url(../img/countries/mm.gif) no-repeat 2px top !important; }
+.csp-nl, 
+.csp-nl_NL { background:transparent url(../img/countries/nl.gif) no-repeat 2px top !important; }
+.csp-nb_NO { background:transparent url(../img/countries/no.gif) no-repeat 2px top !important; }
+.csp-no_NO, 
+.csp-nn_NO { background:transparent url(../img/countries/no.gif) no-repeat 2px top !important; }
+.csp-pl_PL { background:transparent url(../img/countries/pl.gif) no-repeat 2px top !important; }
+.csp-pt_BR { background:transparent url(../img/countries/br.gif) no-repeat 2px top !important; }
+.csp-pt, 
+.csp-pt_PT { background:transparent url(../img/countries/pt.gif) no-repeat 2px top !important; }
+.csp-ro, 
+.csp-ro_RO { background:transparent url(../img/countries/ro.gif) no-repeat 2px top !important; }
+.csp-ru_RU { background:transparent url(../img/countries/ru.gif) no-repeat 2px top !important; }
+.csp-uk, 
+.csp-ru_UA { background:transparent url(../img/countries/ua.gif) no-repeat 2px top !important; }
+.csp-sd_PK { background:transparent url(../img/countries/pk.gif) no-repeat 2px top !important; }
+.csp-si_LK { background:transparent url(../img/countries/lk.gif) no-repeat 2px top !important; }
+.csp-sk, 
+.csp-sk_SK { background:transparent url(../img/countries/sk.gif) no-repeat 2px top !important; }
+.csp-sl_SI { background:transparent url(../img/countries/si.gif) no-repeat 2px top !important; }
+.csp-sq       { background:transparent url(../img/countries/al.gif) no-repeat 2px top !important; }
+.csp-sr_CS { background:transparent url(../img/countries/cs.gif) no-repeat 2px top !important; }
+.csp-sr_RS { background:transparent url(../img/countries/rs.gif) no-repeat 2px top !important; }
+.csp-sv_SE { background:transparent url(../img/countries/se.gif) no-repeat 2px top !important; }
+.csp-th, 
+.csp-th_TH { background:transparent url(../img/countries/th.gif) no-repeat 2px top !important; }
+.csp-tr, 
+.csp-tr_TR, 
+.csp-ckb     { background:transparent url(../img/countries/tr.gif) no-repeat 2px top !important; }
+.csp-uz_UZ { background:transparent url(../img/countries/uz.gif) no-repeat 2px top !important; }
