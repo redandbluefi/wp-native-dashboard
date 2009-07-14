@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: WP Native Dashboard
-Plugin URI: 	http://www.code-styling.de
+Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.0
+Version: 1.0.1
 
 License:
  ==============================================================================
@@ -195,6 +195,7 @@ class wp_native_dashboard {
 			require_once(dirname(__FILE__).'/automattic.php');
 			$this->automattic = new wp_native_dashboard_automattic($this->tagged_version, $this->root_tagged_version);
 			$this->_load_translation_file();
+			if (is_admin()) wp_enqueue_script('jquery');
 		}
 		//do all stuff while we are at admin center
 		if (is_admin()) {
@@ -203,6 +204,7 @@ class wp_native_dashboard {
 				require_once(dirname(__FILE__).'/langswitcher.php');
 				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url);
 				$this->_load_translation_file();
+				wp_enqueue_script('jquery');
 			}
 		}		
 	}

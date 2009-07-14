@@ -3,7 +3,7 @@ Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
 Tested up to: 2.9-rare
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
@@ -32,7 +32,7 @@ If you have a local WordPress community providing their own downloads for langua
 1. WordPress version 2.7 and later
 1. PHP Interpreter version 4.4.2 or later
 
-Official Website comming soon, is in progress.
+Please visit [the official website](http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en "WP Native Dashboard") for further details, documentation and the latest information on this plugin.
 
 == Installation ==
 
@@ -43,16 +43,20 @@ Official Website comming soon, is in progress.
 
 == Changelog ==
 
+= Version 1.0.1 =
+* Forcing jQuery usage even if a backend page (from another plugin eg.) doesn't make use of.
+* providing official page link for supporting purpose.
+
 = Version 1.0 =
 * initial version
 
 
 == Frequently Asked Questions ==
 = History? =
-Official Website comming soon, is in progress.
+Please visit [the official website](http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en "WP Native Dashboard") for further details, documentation and the latest information on this plugin.
 
 = Where can I get more information? =
-Official Website comming soon, is in progress.
+Please visit [the official website](http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en "WP Native Dashboard") for further details, documentation and the latest information on this plugin.
 
 
 == Screenshots ==
