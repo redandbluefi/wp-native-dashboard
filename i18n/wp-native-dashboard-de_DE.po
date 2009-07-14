@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Native Dashboard v1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2009-07-13 18:07+0200\n"
+"Last-Translator: admin <webmaster@wordpress28.test>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-Basepath: \n"
+"X-Poedit-Bookmarks: \n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Textdomain-Support: yes"
+
+#: automattic.php:132
+#: automattic.php:289
+#@ wp-native-dashboard
+msgid "The network connection to <strong>svn.automattic.com</strong> is currently not available. Please try again later."
+msgstr "Die Netzwerkverbindung zu <strong>svn.automattic.com</strong> ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut."
+
+#: automattic.php:179
+#: automattic.php:247
+#: automattic.php:302
+#: wp-native-dashboard.php:311
+#@ wp-native-dashboard
+msgid "right to left"
+msgstr "rechts nach links"
+
+#: automattic.php:182
+#@ wp-native-dashboard
+msgid "Download"
+msgstr "Herunterladen"
+
+#: automattic.php:209
+#@ wp-native-dashboard
+msgid "You do not have the permission to delete language files."
+msgstr "Sie haben nicht die Berechtigung zum Löschen von Sprachdateien."
+
+#: automattic.php:249
+#: wp-native-dashboard.php:313
+#@ wp-native-dashboard
+msgid "Delete"
+msgstr "Löschen"
+
+#: automattic.php:260
+#@ wp-native-dashboard
+msgid "The download is currently not available."
+msgstr "Der Download ist derzeit nicht verfügbar."
+
+#: automattic.php:287
+#, php-format
+#@ wp-native-dashboard
+msgid "All listed languages <em><small>(rev. %d)</small></em> should be supported by polyglot translation teams as download into your WordPress installation."
+msgstr "Alle aufgeführten Sprachen <small><em>(rev.% d)</em></small> sollten durch Polyglot Übersetzungteams als Download für Ihre WordPress-Installation verfügbar sein."
+
+#: automattic.php:291
+#: wp-native-dashboard.php:332
+#@ wp-native-dashboard
+msgid "Available for download:"
+msgstr "verfügbare Downloads:"
+
+#: automattic.php:305
+#@ wp-native-dashboard
+msgid "installed"
+msgstr "installiert"
+
+#: automattic.php:306
+#@ wp-native-dashboard
+msgid "(build in)"
+msgstr "(im Aufbau)"
+
+#: automattic.php:307
+#@ wp-native-dashboard
+msgid "download"
+msgstr "herunterladen"
+
+#: loginselector.php:27
+#: personalprofile.php:20
+#@ wp-native-dashboard
+msgid "Language"
+msgstr "Sprache"
+
+#: personalprofile.php:41
+#@ wp-native-dashboard
+msgid "Select your prefered language that will be used to show the Admin Center."
+msgstr "Wählen Sie Ihre bevorzugte Sprache, die im Admin-Center verwendet werden soll."
+
+#: wp-native-dashboard.php:218
+#@ wp-native-dashboard
+msgid "Native Dashboard"
+msgstr "Native Dashboard"
+
+#: wp-native-dashboard.php:233
+msgid "Cheatin&#8217; uh?"
+msgstr ""
+
+#: wp-native-dashboard.php:261
+#@ wp-native-dashboard
+msgid "Capabilities"
+msgstr "Fähigkeiten"
+
+#: wp-native-dashboard.php:262
+#@ wp-native-dashboard
+msgid "Installed Languages"
+msgstr "Installierten Sprachen"
+
+#: wp-native-dashboard.php:263
+#@ wp-native-dashboard
+msgid "Downloads"
+msgstr "Downloads"
+
+#: wp-native-dashboard.php:270
+#@ wp-native-dashboard
+msgid "extend the <em>WordPress Logon Screen</em> to choose a language too."
+msgstr "erweitere den <em>WordPress Anmelde-Bildschirm</em> um eine Sprache auszuwählen."
+
+#: wp-native-dashboard.php:273
+#@ wp-native-dashboard
+msgid "extend <a href=\"profile.php\" target=\"_blank\">Personal Profile Settings</a> with users prefered language."
+msgstr "erweitere die <a href=\"profile.php\" target=\"_blank\">persönlichen Profil-Einstellungen</a> um eine benutzerspezifische Sprachwahl."
+
+#: wp-native-dashboard.php:276
+#@ wp-native-dashboard
+msgid "extend <em>Admin Center Headline</em> with a language quick selector."
+msgstr "erweitere die <em>Admin-Center Kopfzeile</em> mit einer Sprachumschaltung."
+
+#: wp-native-dashboard.php:279
+#@ wp-native-dashboard
+msgid "read more &raquo;"
+msgstr "Lesen Sie mehr »"
+
+#: wp-native-dashboard.php:279
+#@ wp-native-dashboard
+msgid "If you are using one of the current available <a href=\"http://wordpress.org/extend/plugins/search.php?q=multilingual\" target=\"_blank\">multilingual plugins</a>, which permits you writing and publishing posts in several languages, you may also have the need, that native speaking authors should be able to choose their prefered backend language while writing. It's your decision if and how this will be possible. This feature set does not impact your frontend language (defined by config or by any multilingual plugin)."
+msgstr "Wenn Sie eines der aktuellen <a href=\"http://wordpress.org/extend/plugins/search.php?q=multilingual\" target=\"_blank\">Plugins für Mehrsprachigkeit</a> benutzen, das Ihnen erlaubt, Beiträge in mehreren Sprachen zu schreiben und zu veröffentlichen, könnten es notwendig werden, dass die muttersprachlichen Autoren in der Lage sein sollten, in ihrer bevorzugte Sprache im Backend zu schreiben. Es ist Ihre Entscheidung, ob und wie dies möglich sein wird. Diese Funktionen haben keinen Einfluss auf Ihre Frontend Sprache (definiert durch die Konfiguration oder durch ein Plugin für Mehrsprachigkeit)."
+
+#: wp-native-dashboard.php:287
+#@ wp-native-dashboard
+msgid "Your WordPress installation currectly supports this list of languages at your Dashboard."
+msgstr "Ihre WordPress-Installation unterstützt momentan diese Liste der Sprachen in Ihrem Dashboard."
+
+#: wp-native-dashboard.php:328
+#@ wp-native-dashboard
+msgid "A lot of languages should be provided by polyglot translation teams as download into your WordPress installation."
+msgstr "Viele Sprachen werden von Polyglot Übersetzungsteams als Download für Ihre WordPress-Installation angeboten."
+
+#: wp-native-dashboard.php:330
+#@ wp-native-dashboard
+msgid "Downloads:"
+msgstr "Downloads:"
+
+#: wp-native-dashboard.php:330
+#@ wp-native-dashboard
+msgid "Sorry, your installation doesn't support direct file access, complete support comming soon."
+msgstr "Es tut uns leid, Ihre Installation unterstützt keinen direkten Dateizugriff, volle Unterstützung steht in Kürze zur Verfügung."
+
+#: wp-native-dashboard.php:332
+#@ wp-native-dashboard
+msgid "check repository &raquo;"
+msgstr "prüfen »"
+
+#: wp-native-dashboard.php:352
+#@ wp-native-dashboard
+msgid "Native Dashboard Settings"
+msgstr "Native Dashboard Einstellungen"
+
+#: wp-native-dashboard.php:371
+#@ wp-native-dashboard
+msgid "cleanup all settings at plugin deactivation."
+msgstr "alle Einstellungen bei Plugin-Deaktivierung entfernen."
+
