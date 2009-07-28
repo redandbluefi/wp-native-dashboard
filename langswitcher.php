@@ -20,16 +20,15 @@ class wp_native_dashboard_langswitcher {
 	
 	function on_print_dashboard_switcher() {
 		$langs = wp_native_dashboard_collect_installed_languages();
-		
 		$loc = get_locale();
 		echo '<div id="csp-langswitcher-actions" class="alignleft">';
-		echo '<div id="csp-langswitcher-current"><span class="csp-'.$loc.'">'.$loc.'</span></div>';
+		echo '<div id="csp-langswitcher-current"><span class="csp-'.$loc.'">'.wp_native_dashboard_get_name_of($loc).'</span></div>';
 		echo '<div id="csp-langswitcher-toggle"><br/></div>';
 		if (count($langs) > 1) {
-			echo '<div id="csp-langoptions" style="width: 92px; display: none;">';
+			echo '<div id="csp-langoptions" style="display: none;">';
 			foreach($langs as $lang) {
 				if ($lang != $loc) {
-					echo '<a href="javascript:void(0);" class="csp-langoption" hreflang="'.$lang.'"><span class="csp-'.$lang.'">'.$lang.'</span></a>';
+					echo '<a href="javascript:void(0);" class="csp-langoption" hreflang="'.$lang.'"><span class="csp-'.$lang.'">'.wp_native_dashboard_get_name_of($lang).'</span></a>';
 				}
 			}
 			echo '</div>';

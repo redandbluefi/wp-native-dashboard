@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.0.1
+Version: 1.1.0
 
 License:
  ==============================================================================
@@ -35,13 +35,18 @@ if (!function_exists ('add_action')) {
 
 if ( !defined('WP_PLUGIN_URL') ) 
 	define('WP_PLUGIN_URL', WP_CONTENT_URL.'/plugins');
+	
+if ( !defined('WP_LANG_DIR') ) 
+	define('WP_LANG_DIR', WP_CONTENT_URL.'/languages');
 
+include_once(dirname(__file__).'/language-names.php');
+		
 function wp_native_dashboard_collect_installed_languages() {
 	$installed = array();
-	$d = @opendir(WP_CONTENT_DIR.'/languages');
+	$d = @opendir(WP_LANG_DIR);
 	if (!$d) return false;
 	while(false !== ($item = readdir($d))) {
-		$f = str_replace("\\",'/',WP_CONTENT_DIR.'/languages' . '/' . $item);
+		$f = str_replace("\\", '/', WP_LANG_DIR.'/' . $item);
 		if ('.' == $item || '..' == $item)
 			continue;
 		if (is_file($f)){
@@ -55,6 +60,13 @@ function wp_native_dashboard_collect_installed_languages() {
 	sort($installed);
 	return $installed;
 }	
+
+function wp_native_dashboard_get_name_of($locale) {
+	global $wpnd_language_names;
+	list($lang,) = explode('_', $locale);
+	$name = $wpnd_language_names[$lang];
+	return '<b>'.$name .'</b>&nbsp;<i>('.$locale.')</i>';
+}
 
 function wp_native_dashboard_is_rtl_language($locale) {
 	$rtl = array('ar', 'ckb', 'fa', 'he', 'ur');
@@ -78,10 +90,10 @@ class wp_native_dashboard {
 		$this->defaults->cleanup_on_deactivate		= false;
 		
 		//try to get the options now
-		$this->options							= get_option('wp-native-dashboard', $this->defaults);
+		$this->options								= get_option('wp-native-dashboard', $this->defaults);
 
 		//keep it for later use
-		$this->plugin_url						= WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
+		$this->plugin_url							= WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
 				
 		//detect the current main version
 		global $wp_version;
@@ -251,6 +263,7 @@ class wp_native_dashboard {
 		wp_enqueue_script('common');
 		wp_enqueue_script('wp-lists');
 		wp_enqueue_script('postbox');
+		wp_enqueue_script('jquery-ui-dialog');
 		
 		//  enqueue here your scripts/css needed for page or load some additional data 
 		global $text_direction;
@@ -258,6 +271,8 @@ class wp_native_dashboard {
 			wp_enqueue_style('wp-native-dashboard-css-rtl', $this->plugin_url.'/css/style-rtl.css');
 		else
 			wp_enqueue_style('wp-native-dashboard-css', $this->plugin_url.'/css/style.css');
+			
+		wp_enqueue_style('wp-native-dashboard-ui', $this->plugin_url.'/css/ui.all.css');
 
 		//add several metaboxes now, all metaboxes registered during load page can be switched off/on at "Screen Options" automatically, nothing special to do therefore				
 		add_meta_box('wp-native-dashboard-acl', __('Capabilities', 'wp-native-dashboard'), array(&$this, 'on_print_metabox_content_acl'), $this->pagehook, 'normal', 'core');		
@@ -287,32 +302,19 @@ class wp_native_dashboard {
 		$installed = wp_native_dashboard_collect_installed_languages();
 		?>
 		<p><?php _e('Your WordPress installation currectly supports this list of languages at your Dashboard.','wp-native-dashboard'); ?></p>
-		<?php 
-			//global $wp_filesystem; 
-			//var_dump($wp_filesystem); 
-			//$url = wp_nonce_url('options-general.php?page=wp-native-dashboard');
-			//var_dump(get_filesystem_method(array()));
-			//var_dump(request_filesystem_credentials($url));
-			//   wp-admin/includes/plugin.php:412
-			//   wp-admin/includes/file.php:631
-			
-			//testing if we are able to use direct file system
-			//TODO: next version will support also all other types
-			$can_write_direct = (get_filesystem_method(array()) == 'direct');
-		?>
 		<table id="table_local_i18n" class="widefat fixed" cellspacing="0">
 			<tbody>
 				<?php
 				$state=0;
 				foreach($installed as $lang) {
 					$state = ($state + 1) % 2;
-					$mo = str_replace('\\','/', WP_CONTENT_DIR.'/languages/'.$lang.'.mo');
+					$mo = str_replace('\\','/', WP_LANG_DIR.'/'.$lang.'.mo');
 					?>
 					<tr id="tr-i18n-installed-<?php echo $lang; ?>" class="<?php if ($state) echo 'alternate'; ?>">
-						<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo $lang; ?></span></td>
+						<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo wp_native_dashboard_get_name_of($lang); ?></span></td>
 						<td><?php echo (wp_native_dashboard_is_rtl_language($lang) ? __('right to left', 'wp-native-dashboard') : '&nbsp;'); ?></td>
 						<td><?php echo (is_file($mo) ? filesize($mo). '&nbsp;Bytes' : '-n.a.-'); ?></td>
-						<td><?php if($lang != 'en_US' && $can_write_direct) : ?><a class="csp-delete-local-file" href="<?php echo $mo; ?>"><?php _e('Delete','wp-native-dashboard'); ?></a><?php endif; ?></td>
+						<td><?php if($lang != 'en_US') : ?><a class="csp-delete-local-file" href="<?php echo $mo; ?>"><?php _e('Delete','wp-native-dashboard'); ?></a>&nbsp;<span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span><?php endif; ?></td>
 					</tr>
 					<?php
 				}
@@ -325,12 +327,8 @@ class wp_native_dashboard {
 	function on_print_metabox_automattic_i18n() {
 		$color = '#21759B';
 		$perc = 0.0;
-		$can_write_direct = (get_filesystem_method(array()) == 'direct');
 		?>
-		<p><?php echo sprintf(__('A lot of languages should be provided by polyglot translation teams as download into your WordPress installation.','wp-native-dashboard'), $revision); ?></p>
-		<?php if (!$can_write_direct) : ?>
-		<p class="csp-read-more center"><b><?php _e('Downloads:', 'wp-native-dashboard'); ?></b>&nbsp;<?php _e('Sorry, your installation doesn\'t support direct file access, complete support comming soon.', 'wp-native-dashboard'); ?></p>
-		<?php else : ?>
+		<p><?php echo sprintf(__('A lot of languages should be provided by polyglott translation teams as download into your WordPress installation.','wp-native-dashboard'), $revision); ?></p>
 		<p class="csp-read-more center"><?php _e('Available for download:', 'wp-native-dashboard'); ?> <a id="csp-check-repository" href="#svn"><?php _e('check repository &raquo;','wp-native-dashboard'); ?></a> <span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span></p>
 		<div id="svn-downloads">
 			<div class="progressbar" style="display:none;">
@@ -342,7 +340,7 @@ class wp_native_dashboard {
 				<tbody></tbody>
 			</table>
 		</div>
-		<?php endif;
+		<?php
 	}
 	
 	//executed to show the plugins complete admin page
@@ -383,6 +381,7 @@ class wp_native_dashboard {
 			</div>	
 		</form>
 		</div>
+		<div id="csp-credentials"></div>
 	<script type="text/javascript">
 		//<![CDATA[
 		jQuery(document).ready( function($) {

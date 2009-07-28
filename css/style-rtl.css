@@ -8,7 +8,7 @@
 	top: 11px;
 	left: 10px;
 	margin-right:20px;
-	width: 100px;
+	width: 150px;
 }
 *:first-child + html #csp-langswitcher-actions { z-index: 103; }
 
@@ -38,7 +38,13 @@
 	border-bottom-style: solid;
 }
 #csp-langswitcher-current span {
-	font-size: 12px; font-family: monospace; margin:0; padding-right: 24px; background:transparent url(../img/countries/unknown.gif) no-repeat right 2px; color: #ddd;
+	font-size: 12px; 
+	font-family: monospace; 
+	margin:0; 
+	padding-right: 24px; 
+	background:transparent url(../img/countries/unknown.gif) no-repeat right 2px; 
+	color: #ddd;
+	white-space: nowrap;
 }
 *:first-child + html #csp-langswitcher-current,
 *:first-child + html #csp-langswitcher-current span  {zoom: 100%; } /* IE hack */
@@ -64,6 +70,7 @@ html:first-child>b\ody #csp-langswitcher-current span { padding-right: 0px !impo
 	padding-bottom: 6px;
 	font-size: 12px; 
 	font-family: 	monospace; 
+	width: 142px;
 	-moz-border-radius: 0 0 12px 12px;
 	-webkit-border-bottom-right-radius: 12px;
 	-webkit-border-bottom-left-radius: 12px;

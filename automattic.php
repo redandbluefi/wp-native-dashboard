@@ -23,15 +23,79 @@ class wp_native_dashboard_automattic {
 		//<![CDATA[
 		function wpnd_delete_language() {
 			var elem = jQuery(this);
+			elem.parent().find('.ajax-feedback').css({visibility : 'visible' });
+			var cred = { 
+				action: 'wp_native_dashboard_delete_language',
+				file : elem.attr('href') 
+			};
+			jQuery('#csp-credentials > form').find('input').each(function(i, e) {
+				if ((jQuery(e).attr('type') == 'radio') && !jQuery(e).attr('checked')) return;
+				var s = jQuery(e).attr('name');
+				var v = jQuery(e).val();
+				cred[s] = v;
+			});
 			jQuery.ajax({
 				type: "POST",
 				url: "admin-ajax.php",
-				data: { action: 'wp_native_dashboard_delete_language', file : jQuery(this).attr('href') },
+				data: cred,
 				success: function(msg){
-					elem.parents('tr').fadeOut('slow', function() { jQuery(this).remove(); });
+					elem.parents('tr').fadeOut('slow', function() { 
+						var p = jQuery(this).parents('table');
+						jQuery(this).remove(); 
+						p.find('tr').each(function(i,e) {
+							jQuery(e).removeClass('alternate');
+							if (i % 2 == 0) jQuery(e).addClass('alternate');
+						});
+						
+					});
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					//handled in next version that also support all file system types
+					if (XMLHttpRequest.status == '401') {
+						jQuery('#csp-credentials').html(XMLHttpRequest.responseText).dialog({
+							width: '500px',
+							closeOnEscape: false,
+							modal: true,
+							resizable: false,
+							title: '<b><?php echo js_escape(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
+							buttons: { 
+								"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+									jQuery('#csp-credentials').dialog("close");
+									elem.trigger('click');
+								},
+								"<?php echo js_escape(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
+									elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
+									jQuery('#csp-credentials').dialog("close"); 
+								} 
+							},
+							open: function(event, ui) {
+								jQuery('#csp-credentials').show().css('width', 'auto');
+							},
+							close: function() {
+								jQuery('#csp-credentials').dialog("destroy");
+							}
+						});
+					}else {
+						jQuery('#csp-credentials').html(XMLHttpRequest.responseText).dialog({
+							width: '500px',
+							closeOnEscape: false,
+							modal: true,
+							resizable: false,
+							title: '<b><?php echo js_escape('Error', 'wp-native-dashboard'); ?></b>',
+							buttons: { 
+								"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+									jQuery('#csp-credentials').dialog("close");
+								},
+							},
+							open: function(event, ui) {
+								jQuery('#csp-credentials').show().css('width', 'auto');
+							},
+							close: function() {
+								jQuery('#csp-credentials').dialog("destroy");
+							}
+						});
+					}
+					jQuery('#upgrade').hide().attr('disabled', 'disabled');
 				}
 			});
 			return false;			
@@ -67,19 +131,84 @@ class wp_native_dashboard_automattic {
 				jQuery('.csp-download-svn-file').click(function() {
 					var elem = jQuery(this);
 					elem.parent().find('.ajax-feedback').css({visibility : 'visible' });
+					var cred = { 
+						action: 'wp_native_dashboard_download_language',
+						file : elem.attr('href') 
+					};
+					jQuery('#csp-credentials > form').find('input').each(function(i, e) {
+						if ((jQuery(e).attr('type') == 'radio') && !jQuery(e).attr('checked')) return;
+						var s = jQuery(e).attr('name');
+						var v = jQuery(e).val();
+						cred[s] = v;
+					});
 					jQuery.ajax({
 						type: "POST",
 						url: "admin-ajax.php",
-						data: { action: 'wp_native_dashboard_download_language', file : elem.attr('href') },
+						data: cred,
 						success: function(msg){
-							jQuery('#table_local_i18n').append(msg);
+							jQuery('#table_local_i18n').append(msg).find('tr').each(function(i,e) {
+								jQuery(e).removeClass('alternate');
+								if (i % 2 == 0) jQuery(e).addClass('alternate');
+							});
 							jQuery('#table_local_i18n tr:last .csp-delete-local-file').click(wpnd_delete_language);
-							elem.parents('tr').fadeOut('slow', function() { elem.remove(); });
+							elem.parents('tr').fadeOut('slow', function() { 
+								var p = jQuery(this).parents('table');
+								jQuery(this).remove();
+								p.find('tr').each(function(i,e) {
+									jQuery(e).removeClass('alternate');
+									if (i % 2 == 0) jQuery(e).addClass('alternate');
+								});
+							});
 							elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 							csl_refresh_language_switcher();
 						},
 						error: function(XMLHttpRequest, textStatus, errorThrown) {
 							//handled in next version that also support all file system types
+							if (XMLHttpRequest.status == '401') {
+								jQuery('#csp-credentials').html(XMLHttpRequest.responseText).dialog({
+									width: '500px',
+									closeOnEscape: false,
+									modal: true,
+									resizable: false,
+									title: '<b><?php echo js_escape(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
+									buttons: { 
+										"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+											jQuery('#csp-credentials').dialog("close");
+											elem.trigger('click');
+										},
+										"<?php echo js_escape(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
+											elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
+											jQuery('#csp-credentials').dialog("close"); 
+										} 
+									},
+									open: function(event, ui) {
+										jQuery('#csp-credentials').show().css('width', 'auto');
+									},
+									close: function() {
+										jQuery('#csp-credentials').dialog("destroy");
+									}
+								});
+							}else {
+								jQuery('#csp-credentials').html(XMLHttpRequest.responseText).dialog({
+									width: '500px',
+									closeOnEscape: false,
+									modal: true,
+									resizable: false,
+									title: '<b><?php echo js_escape(__('Error', 'wp-native-dashboard')); ?></b>',
+									buttons: { 
+										"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+											jQuery('#csp-credentials').dialog("close");
+										},
+									},
+									open: function(event, ui) {
+										jQuery('#csp-credentials').show().css('width', 'auto');
+									},
+									close: function() {
+										jQuery('#csp-credentials').dialog("destroy");
+									}
+								});
+							}
+							jQuery('#upgrade').hide().attr('disabled', 'disabled');							
 							elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 						}
 					});
@@ -175,7 +304,7 @@ class wp_native_dashboard_automattic {
 		$url .= $lang.'.mo';
 		?>
 		<tr id="tr-i18n-download-<?php echo $lang; ?>" class="<?php if (($row + 1) % 2) echo 'alternate'; ?>">
-		<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo $lang; ?></span></td>
+		<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo wp_native_dashboard_get_name_of($lang); ?></span></td>
 		<td><?php echo (wp_native_dashboard_is_rtl_language($lang) ? __('right to left', 'wp-native-dashboard') : '&nbsp;'); ?></td>
 		<td>-n.a.-</td>
 		<td><?php if(!in_array($lang, $installed)) : ?>
@@ -188,21 +317,56 @@ class wp_native_dashboard_automattic {
 	}
 	
 	function on_ajax_wp_native_dashboard_delete_language() {
+	
 		if (is_user_logged_in() && current_user_can('manage_options')) {
-			global $wp_filesystem;
-			$file = basename($_POST['file']);
-			if (file_exists(WP_CONTENT_DIR.'/languages/'.$file)) {
-				ob_start();
-				if ( WP_Filesystem(true) && is_object($wp_filesystem) ) {
-					if($wp_filesystem->delete(WP_CONTENT_DIR.'/languages/'.$file)) {
-						$wp_filesystem->delete(WP_CONTENT_DIR.'/languages/'.substr($file, 0, -2).'php');
-						$wp_filesystem->delete(WP_CONTENT_DIR.'/languages/continents-cities-'.$file);
-						ob_end_clean();
-						exit();
-					}
-				}
+			global $wp_filesystem, $parent_file;
+			$current_parent  = $parent_file;
+			$parent_file 	 = 'tools.php'; //needed for screen icon :-)
+			
+			//check the file system
+			ob_start();
+			$url = 'admin-ajax.php';
+			if ( false === ($credentials = request_filesystem_credentials($url)) ) {
+				$data = ob_get_contents();
 				ob_end_clean();
+				if( ! empty($data) ){
+					header('Status: 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
+					echo $data;
+					exit;
+				}
+				return;
 			}
+
+			if ( ! WP_Filesystem($credentials) ) {
+				request_filesystem_credentials($url, '', true); //Failed to connect, Error and request again
+				$data = ob_get_contents();
+				ob_end_clean();
+				if( ! empty($data) ){
+					header('Status: 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
+					echo $data;
+					exit;
+				}
+				return;
+			}
+			ob_end_clean();
+			$parent_file = $current_parent;
+
+			$file = basename($_POST['file']);
+			$dir = $wp_filesystem->find_folder(WP_LANG_DIR.'/');
+			$filename = $dir.$file;
+			
+			ob_start();
+			if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
+				if($wp_filesystem->delete($filename)) {
+					$wp_filesystem->delete(substr($filename, 0, -2).'php');
+					$wp_filesystem->delete($dir.'continents-cities-'.$file);
+					ob_end_clean();
+					exit();
+				}
+			}
+			ob_end_clean();
 		}
 		header('Status: 404 Not Found');
 		header('HTTP/1.1 404 Not Found');
@@ -212,7 +376,41 @@ class wp_native_dashboard_automattic {
 	
 	function on_ajax_wp_native_dashboard_download_language() {
 		if (is_user_logged_in() && current_user_can('manage_options')) {
-			global $wp_filesystem;
+			global $wp_filesystem, $parent_file;
+			$current_parent  = $parent_file;
+			$parent_file 	 = 'tools.php'; //needed for screen icon :-)
+						
+			//check the file system
+			ob_start();
+			$url = 'admin-ajax.php';
+			if ( false === ($credentials = request_filesystem_credentials($url)) ) {
+				$data = ob_get_contents();
+				ob_end_clean();
+				if( ! empty($data) ){
+					header('Status: 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
+					echo $data;
+					exit;
+				}
+				return;
+			}
+
+			if ( ! WP_Filesystem($credentials) ) {
+				request_filesystem_credentials($url, '', true); //Failed to connect, Error and request again
+				$data = ob_get_contents();
+				ob_end_clean();
+				if( ! empty($data) ){
+					header('Status: 401 Unauthorized');
+					header('HTTP/1.1 401 Unauthorized');
+					echo $data;
+					exit;
+				}
+				return;
+			}
+			ob_end_clean();
+			$parent_file = $current_parent;
+
+			
 			$file = basename($_POST['file']);
 			$lang = substr($file,0,-3);
 			$tagged = $this->tagged_version;
@@ -222,31 +420,31 @@ class wp_native_dashboard_automattic {
 			$response_mo = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/".$file);
 			if(!is_wp_error($response_mo)) {
 				ob_start();
-				if ( WP_Filesystem(true) && is_object($wp_filesystem) ) {
-					$done = $wp_filesystem->put_contents(WP_CONTENT_DIR.'/languages/'.$file, $response_mo['body'], FS_CHMOD_FILE);
+				if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
+					$dir = $wp_filesystem->find_folder(WP_LANG_DIR.'/');
+					$done = $wp_filesystem->put_contents($dir.$file, $response_mo['body']);
 					if ($done) {
 						global $wp_version;
 						if (version_compare($wp_version, '2.8', '>=')) {
 							$response_cities_mo = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/continents-cities-".$file);
 							if(!is_wp_error($response_cities_mo)) {
-								$wp_filesystem->put_contents(WP_CONTENT_DIR.'/languages/continents-cities-'.$file, $response_cities_mo['body'], FS_CHMOD_FILE);
+								$wp_filesystem->put_contents($dir.'continents-cities-'.$file, $response_cities_mo['body']);
 							}
 						}
 						if (wp_native_dashboard_is_rtl_language($lang)) {
 							$content = wp_native_dashboard_rtl_extension_file_content();
 							$response_php = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.php');
 							if(!is_wp_error($response_php)) { $content = $response_php['body']; }
-							$wp_filesystem->put_contents(WP_CONTENT_DIR.'/languages/'.$lang.'.php', $content, FS_CHMOD_FILE);
+							$wp_filesystem->put_contents($dir.$lang.'.php', $content);
 						}
 						ob_end_clean();
-						$can_write_direct = (get_filesystem_method(array()) == 'direct');
-						$mo = str_replace('\\', '/', WP_CONTENT_DIR.'/languages/'.$file);
+						$mo = str_replace('\\', '/', WP_LANG_DIR.'/'.$file);
 						?>
 						<tr id="tr-i18n-installed-<?php echo $lang; ?>">
-							<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo $lang; ?></span></td>
+							<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo wp_native_dashboard_get_name_of($lang); ?></span></td>
 							<td><?php echo (wp_native_dashboard_is_rtl_language($lang) ? __('right to left', 'wp-native-dashboard') : '&nbsp;'); ?></td>
 							<td><?php echo filesize($mo).'&nbsp;Bytes'; ?></td>
-							<td><?php if($lang != 'en_US' && $can_write_direct) : ?><a class="csp-delete-local-file" href="<?php echo $mo; ?>"><?php _e('Delete','wp-native-dashboard'); ?></a><?php endif; ?></td>
+							<td><?php if($lang != 'en_US') : ?><a class="csp-delete-local-file" href="<?php echo $mo; ?>"><?php _e('Delete','wp-native-dashboard'); ?></a>&nbsp;<span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span><?php endif; ?></td>
 						</tr>
 						<?php
 						exit();
@@ -259,61 +457,6 @@ class wp_native_dashboard_automattic {
 		header('HTTP/1.1 404 Not Found');
 		_e("The download is currently not available.", 'wp-native-dashboard');
 		exit();
-	}
-	
-	
-	function on_print_metabox_automattic_i18n() {
-		$installed = wp_native_dashboard_collect_installed_languages();
-		
-		$revision 	= 0;
-		$langs 		= $installed;
-		$url 		= 'http://svn.automattic.com/wordpress-i18n/';
-		$response = wp_remote_get($url);
-		$error = is_wp_error($response);
-		if(!$error) {
-			$lines = split("\n",$response['body']);
-			foreach($lines as $line) {
-				if (preg_match('/Revision\s*(\d+)/', $line, $hits)) {
-					$revision = (int)$hits[1]; 
-				}elseif (preg_match("/href\s*=\s*\"(\S+)\/\"/", $line, $hits)) {
-					if (in_array($hits[1], array('tools', 'theme', 'pot', 'http://subversion.tigris.org'))) continue;
-					if (preg_match("/@/", $hits[1])) continue;
-					if (!in_array($hits[1], $langs)) $langs[] = $hits[1];
-				}			
-			}
-			sort($langs);
-		}
-		?>
-		<p><?php echo sprintf(__('All listed languages <em><small>(rev. %d)</small></em> should be supported by polyglot translation teams as download into your WordPress installation.','wp-native-dashboard'), $revision); ?></p>
-		<?php if ($error) : ?>
-		<p class="center error"><?php _e('The network connection to <strong>svn.automattic.com</strong> is currently not available. Please try again later.', 'wp-native-dashboard'); ?></p>
-		<?php else: ?>
-		<p class="csp-read-more center"><?php _e('Available for download:', 'wp-native-dashboard'); ?></p>
-		<table id="table_svn_i18n" class="widefat fixed" cellspacing="0">
-			<tbody>
-				<?php
-				$state=0;
-				foreach($langs as $lang) {
-					$state = ($state + 1) % 2;
-					$mo = WP_CONTENT_DIR.'/languages/'.$lang.'.mo';
-					?>
-					<tr id="tr-i18n-svn-download-<?php echo $lang; ?>" class="<?php if ($state) echo 'alternate'; ?><?php if (in_array($lang, $installed)) echo " lang-installed"; ?>">
-						<td><span class="i18n-file csp-<?php echo $lang; ?>"><?php echo $lang; ?></span></td>
-						<td><?php echo (wp_native_dashboard_is_rtl_language($lang) ? __('right to left', 'wp-native-dashboard') : ''); ?></td>
-						<td>
-							<?php if (in_array($lang, $installed)) :?>
-							<?php _e('installed', 'wp-native-dashboard'); ?>
-							<?php elseif($lang == 'en_US') : _e('(build in)', 'wp-native-dashboard'); else : ?>
-							<a href="http://svn.automattic.com/wordpress-i18n/<?php echo $lang; ?>/tags/<?php echo $this->tagged_version; ?>/messages/<?php echo $lang; ?>.mo"><?php _e('download', 'wp-native-dashboard'); ?></a>&nbsp;<span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span>
-							<?php endif; ?>
-						</td>
-					</tr>
-					<?php
-				}
-				?>
-			</tbody>
-		</table>
-		<?php endif;	
 	}
 	
 }

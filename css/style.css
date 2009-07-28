@@ -8,7 +8,7 @@
 	top: 11px;
 	left: 10px;
 	margin-right:20px;
-	width: 100px;
+	width: 160px;
 }
 *:first-child + html #csp-langswitcher-actions { z-index: 103; }
 
@@ -38,7 +38,14 @@
 	border-bottom-style: solid;
 }
 #csp-langswitcher-current span {
-	font-size: 10px; /* font-family: monospace; */ margin:0;padding:0; padding-left: 24px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px top; color: #ddd;
+	font-size: 10px; 
+	/* font-family: monospace; */ 
+	margin:0;
+	padding:0; 
+	padding-left: 24px; 
+	background:transparent url(../img/countries/unknown.gif) no-repeat 2px top; 
+	color: #ddd;
+	white-space: nowrap;
 }
 *:first-child + html #csp-langswitcher-current,
 *:first-child + html #csp-langswitcher-current span  {zoom: 100%; } /* IE hack */
@@ -61,6 +68,7 @@
 	padding: 3px; 
 	padding-bottom: 6px;
 	font-size: 10px; 
+	width: 152px;
 /*	font-family: 	monospace;  */
 	-moz-border-radius: 0 0 12px 12px;
 	-webkit-border-bottom-right-radius: 12px;
@@ -75,7 +83,7 @@
 }
 	
 .csp-langoption { display: block; text-decoration: none !important; color:#ddd; padding: 0px 0px 0px 0px;  margin-bottom: 6px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px 3px;}
-.csp-langoption span { padding-left: 24px;} 
+.csp-langoption span { padding-left: 24px; } 
 a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 
 .lang-installed { background-color: #E7F7D3 !important; }

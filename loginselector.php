@@ -33,7 +33,7 @@ class wp_native_dashboard_loginselector {
 		foreach($langs as $lang) { 
 			echo "<option value=\"$lang\"";
 			if ($loc == $lang) echo ' selected="selected"';
-			echo ">$lang</option>"; 
+			echo ">".wp_native_dashboard_get_name_of($lang)."</option>"; 
 		}		
 		?>
 		</select>
