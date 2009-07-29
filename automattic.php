@@ -84,6 +84,7 @@ class wp_native_dashboard_automattic {
 							title: '<b><?php echo js_escape('Error', 'wp-native-dashboard'); ?></b>',
 							buttons: { 
 								"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+									elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 									jQuery('#csp-credentials').dialog("close");
 								},
 							},
@@ -356,6 +357,12 @@ class wp_native_dashboard_automattic {
 			$file = basename($_POST['file']);
 			$dir = $wp_filesystem->find_folder(WP_LANG_DIR.'/');
 			$filename = $dir.$file;
+			if (($dir === false) || !$wp_filesystem->is_file($filename)) {
+				header('Status: 404 Not Found');
+				header('HTTP/1.1 404 Not Found');
+				echo sprintf(__("The language file %s you tried to delete does not exist.", 'wp-native-dashboard'), $file);
+				exit();				
+			}
 			
 			ob_start();
 			if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
@@ -422,6 +429,20 @@ class wp_native_dashboard_automattic {
 				ob_start();
 				if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
 					$dir = $wp_filesystem->find_folder(WP_LANG_DIR.'/');
+					if (!$wp_filesystem->is_dir($dir)) { 
+						//US original versions doesn't contain any languages folder !
+						if($wp_filesystem->method == 'direct')
+							$dir = WP_LANG_DIR.'/';
+						else
+							$dir = '/'.str_replace(ABSPATH, '', WP_LANG_DIR.'/');
+						if ($wp_filesystem->mkdir($dir) === false) {
+							ob_end_clean();
+							header('Status: 404 Not Found');
+							header('HTTP/1.1 404 Not Found');
+							echo sprintf(__("The missing languages directory could not be created at '%s'.", 'wp-native-dashboard'), $dir);
+							exit();
+						}
+					}
 					$done = $wp_filesystem->put_contents($dir.$file, $response_mo['body']);
 					if ($done) {
 						global $wp_version;

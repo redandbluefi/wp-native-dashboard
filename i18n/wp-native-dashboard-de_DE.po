@@ -19,35 +19,35 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Textdomain-Support: yes"
 
-#: automattic.php:237
+#: automattic.php:262
 #@ wp-native-dashboard
 msgid "The network connection to <strong>svn.automattic.com</strong> is currently not available. Please try again later."
 msgstr "Die Netzwerkverbindung zu <strong>svn.automattic.com</strong> ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut."
 
-#: automattic.php:284
-#: automattic.php:421
+#: automattic.php:309
+#: automattic.php:466
 #: wp-native-dashboard.php:315
 #@ wp-native-dashboard
 msgid "right to left"
 msgstr "rechts nach links"
 
-#: automattic.php:287
+#: automattic.php:312
 #@ wp-native-dashboard
 msgid "Download"
 msgstr "Herunterladen"
 
-#: automattic.php:349
+#: automattic.php:380
 #@ wp-native-dashboard
 msgid "You do not have the permission to delete language files."
 msgstr "Sie haben nicht die Berechtigung zum Löschen von Sprachdateien."
 
-#: automattic.php:423
+#: automattic.php:468
 #: wp-native-dashboard.php:317
 #@ wp-native-dashboard
 msgid "Delete"
 msgstr "Löschen"
 
-#: automattic.php:434
+#: automattic.php:479
 #@ wp-native-dashboard
 msgid "The download is currently not available."
 msgstr "Der Download ist derzeit nicht verfügbar."
@@ -137,27 +137,27 @@ msgstr "Native Dashboard Einstellungen"
 msgid "cleanup all settings at plugin deactivation."
 msgstr "alle Einstellungen bei Plugin-Deaktivierung entfernen."
 
-#: automattic.php:54
-#: automattic.php:75
-#: automattic.php:154
-#: automattic.php:175
+#: automattic.php:62
+#: automattic.php:86
+#: automattic.php:176
+#: automattic.php:200
 #@ wp-native-dashboard
 msgid "Ok"
 msgstr "Ok"
 
-#: automattic.php:58
-#: automattic.php:158
+#: automattic.php:66
+#: automattic.php:180
 #@ wp-native-dashboard
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: automattic.php:173
+#: automattic.php:198
 #@ wp-native-dashboard
 msgid "Error"
 msgstr "Fehler"
 
-#: automattic.php:52
-#: automattic.php:152
+#: automattic.php:60
+#: automattic.php:174
 #@ wp-native-dashboard
 msgid "User Credentials required"
 msgstr "Anmeldeinformationen erforderlich"
@@ -166,4 +166,16 @@ msgstr "Anmeldeinformationen erforderlich"
 #@ wp-native-dashboard
 msgid "A lot of languages should be provided by polyglott translation teams as download into your WordPress installation."
 msgstr "Viele Sprachen werden von Polyglott Übersetzungsteams als Download für Ihre WordPress-Installation angeboten."
+
+#: automattic.php:363
+#, php-format
+#@ wp-native-dashboard
+msgid "The language file %s you tried to delete does not exist."
+msgstr "Die Sprachdatei %s die Sie löschen möchten, gibt es nicht."
+
+#: automattic.php:442
+#, php-format
+#@ wp-native-dashboard
+msgid "The missing languages directory could not be created at '%s'."
+msgstr "Das fehlenden Sprachdatei-Verzeichnis konnte nicht erstellt werden in '%s'."
 

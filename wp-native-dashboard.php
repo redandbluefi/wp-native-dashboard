@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.1.0
+Version: 1.2.0
 
 License:
  ==============================================================================
@@ -44,7 +44,7 @@ include_once(dirname(__file__).'/language-names.php');
 function wp_native_dashboard_collect_installed_languages() {
 	$installed = array();
 	$d = @opendir(WP_LANG_DIR);
-	if (!$d) return false;
+	if (!$d) return array('en_US');
 	while(false !== ($item = readdir($d))) {
 		$f = str_replace("\\", '/', WP_LANG_DIR.'/' . $item);
 		if ('.' == $item || '..' == $item)
