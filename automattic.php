@@ -242,7 +242,7 @@ class wp_native_dashboard_automattic {
 		$revision 	= 0;
 		$langs 		= $installed;
 		$url 		= 'http://svn.automattic.com/wordpress-i18n/';
-		$response = wp_remote_get($url);
+		$response = @wp_remote_get($url);
 		$error = is_wp_error($response);
 		if(!$error) {
 			$lines = split("\n",$response['body']);
@@ -284,7 +284,7 @@ class wp_native_dashboard_automattic {
 		$installed 		= wp_native_dashboard_collect_installed_languages();
 		$url 			= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$this->tagged_version."/messages/";
 		$url_root		= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$this->root_tagged_version."/messages/";
-		$response_mo 	= wp_remote_get($url);
+		$response_mo 	= @wp_remote_get($url);
 		$found 			= false;
 		$tagged			= $this->tagged_version;
 		
@@ -295,7 +295,7 @@ class wp_native_dashboard_automattic {
 		if ($found === false) {
 			$url = $url_root;
 			$tagged	= $this->root_tagged_version;
-			$response_mo = wp_remote_get($url);
+			$response_mo = @wp_remote_get($url);
 			if (!is_wp_error($response_mo)){
 				if (preg_match("/href\s*=\s*\"".$lang."\.mo\"/", $response_mo['body'])) 
 					$found = true;
@@ -424,7 +424,7 @@ class wp_native_dashboard_automattic {
 			if (preg_match('/\/tags\/(\d+\.\d+|\d+\.\d+\.\d+)\/messages/', $_POST['file'], $h)) {
 				$tagged = $h[1];
 			}
-			$response_mo = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/".$file);
+			$response_mo = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/".$file);
 			if(!is_wp_error($response_mo)) {
 				ob_start();
 				if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
@@ -447,14 +447,14 @@ class wp_native_dashboard_automattic {
 					if ($done) {
 						global $wp_version;
 						if (version_compare($wp_version, '2.8', '>=')) {
-							$response_cities_mo = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/continents-cities-".$file);
+							$response_cities_mo = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/continents-cities-".$file);
 							if(!is_wp_error($response_cities_mo)) {
 								$wp_filesystem->put_contents($dir.'continents-cities-'.$file, $response_cities_mo['body']);
 							}
 						}
 						if (wp_native_dashboard_is_rtl_language($lang)) {
 							$content = wp_native_dashboard_rtl_extension_file_content();
-							$response_php = wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.php');
+							$response_php = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.php');
 							if(!is_wp_error($response_php)) { $content = $response_php['body']; }
 							$wp_filesystem->put_contents($dir.$lang.'.php', $content);
 						}

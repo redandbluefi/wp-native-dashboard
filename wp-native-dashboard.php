@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.2.0
+Version: 1.3.0
 
 License:
  ==============================================================================
@@ -64,7 +64,7 @@ function wp_native_dashboard_collect_installed_languages() {
 function wp_native_dashboard_get_name_of($locale) {
 	global $wpnd_language_names;
 	list($lang,) = explode('_', $locale);
-	$name = $wpnd_language_names[$lang];
+	$name = isset($wpnd_language_names[$lang]) ? $wpnd_language_names[$lang] : __('-n.a.-', 'wp-native-dashboard');
 	return '<b>'.$name .'</b>&nbsp;<i>('.$locale.')</i>';
 }
 
@@ -134,7 +134,7 @@ class wp_native_dashboard {
 	
 	//display potential install errors
 	function _display_version_errors() {
-		if (($_GET['action'] == 'error_scrape') && ($_GET['plugin'] == plugin_basename(__FILE__) )) {
+		if (isset($_GET['action']) && isset($_GET['plugin']) && ($_GET['action'] == 'error_scrape') && ($_GET['plugin'] == plugin_basename(__FILE__) )) {
 			$version_error = $this->_get_version_errors();
 			if (count($version_error) != 0) {
 				echo "<table>";
@@ -201,9 +201,13 @@ class wp_native_dashboard {
 	function on_init() {
 		//some modules need to be loaded here, because they have to support ajax or affect the login page :-)
 		//load the login selector module if it has been enabled to provide language choise at login screen
-		if ($this->options->enable_login_selector && (is_admin() || DOING_AJAX)) { 
+		if ($this->options->enable_login_selector && (is_admin() || defined('DOING_AJAX'))) { 
 			require_once(dirname(__FILE__).'/loginselector.php');
 			$this->loginselector = new wp_native_dashboard_loginselector();
+			$this->_load_translation_file();
+			if (is_admin()) wp_enqueue_script('jquery');
+		}
+		if (($this->options->enable_login_selector || $this->options->enable_language_switcher) && (is_admin() || defined('DOING_AJAX'))) {
 			require_once(dirname(__FILE__).'/automattic.php');
 			$this->automattic = new wp_native_dashboard_automattic($this->tagged_version, $this->root_tagged_version);
 			$this->_load_translation_file();
@@ -327,6 +331,7 @@ class wp_native_dashboard {
 	function on_print_metabox_automattic_i18n() {
 		$color = '#21759B';
 		$perc = 0.0;
+		$revision = null;
 		?>
 		<p><?php echo sprintf(__('A lot of languages should be provided by polyglott translation teams as download into your WordPress installation.','wp-native-dashboard'), $revision); ?></p>
 		<p class="csp-read-more center"><?php _e('Available for download:', 'wp-native-dashboard'); ?> <a id="csp-check-repository" href="#svn"><?php _e('check repository &raquo;','wp-native-dashboard'); ?></a> <span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span></p>
@@ -346,6 +351,7 @@ class wp_native_dashboard {
 	//executed to show the plugins complete admin page
 	function on_show_page() {
 		global $screen_layout_columns;
+		$data = null;
 		?>
 		<div id="howto-metaboxes-general" class="wrap">
 		<?php screen_icon('wp-native-dashboard'); ?>
