@@ -28,7 +28,7 @@ Starting with version 1.1.0 of this plugin it uses now the WordPress build-in fi
 
 If you have a local WordPress community providing their own download repository for language files, please let me know, if you would like to get it integrated.
 Because i didn't found an official language file repository for BuddyPress and WPMU, it currently only permits WordPress language file downloads.
-If you have more specific informations about, please let me know, it's easy to integrate a new download section (also with detection the kind of WP).
+If you have more specific informations about, please let me know, it's easy to integrate a new download section (also with detection the kind of WP). 
 
 = Requirements =
 
