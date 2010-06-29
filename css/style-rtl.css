@@ -24,6 +24,7 @@
 	border-radius: 12px;
 	border-style:solid;
 	border-width:1px;
+	overflow: hidden;
 }
 #csp-langswitcher-actions .slide-down { 
 	background:#797979 url(../img/fav-top.png) repeat-x scroll 0 center; 

@@ -43,7 +43,13 @@ class wp_native_dashboard_loginselector {
 	
 	function on_wp_login($who) {
 		//TODO: standardize the USER-META behavoir
-		update_usermeta(get_profile('ID', $who), 'wp_native_dashboard_language', $_POST['wp_native_dashboard_language']);		
+		global $wp_version;
+		if (version_compare($wp_version, '3.0', '>=')) {
+			$user = get_user_by( 'login', $who );
+			update_user_meta((int)$user->ID, 'wp_native_dashboard_language', $_POST['wp_native_dashboard_language']);		
+		} else {
+			update_usermeta(get_profile('ID', $who), 'wp_native_dashboard_language', $_POST['wp_native_dashboard_language']);		
+		}
 	}
 }
 

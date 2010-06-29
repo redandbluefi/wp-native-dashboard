@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.0
+Version: 1.3.1
 
 License:
  ==============================================================================
@@ -61,6 +61,13 @@ function wp_native_dashboard_collect_installed_languages() {
 	return $installed;
 }	
 
+//WP 3.0 compatibility
+if(!function_exists('update_user_meta')) {
+	function update_user_meta($user_id, $meta_key, $meta_value, $prev_value = '') {
+		return update_usermeta($user_id, $meta_key, $meta_value);
+	}
+}
+
 function wp_native_dashboard_get_name_of($locale) {
 	global $wpnd_language_names;
 	list($lang,) = explode('_', $locale);
@@ -97,7 +104,7 @@ class wp_native_dashboard {
 				
 		//detect the current main version
 		global $wp_version;
-		preg_match("/^(\d+)\.(\d+)\.(\d+|)/", $wp_version, $hits);
+		preg_match("/^(\d+)\.(\d+)(\.\d+|)/", $wp_version, $hits);
 		$this->root_tagged_version = $hits[1].'.'.$hits[2];
 		$this->tagged_version = $this->root_tagged_version;
 		if (!empty($hits[3])) $this->tagged_version .= '.'.$hits[3];
@@ -180,7 +187,7 @@ class wp_native_dashboard {
 		if (is_admin() && !$skip) {
 			if (function_exists('wp_get_current_user')) {
 				$u = wp_get_current_user();
-				if (!$u->wp_native_dashboard_language) {
+				if (!isset($u->wp_native_dashboard_language)) {
 					if ($loc) 
 						$u->wp_native_dashboard_language = $loc;
 					else
@@ -201,7 +208,7 @@ class wp_native_dashboard {
 	function on_init() {
 		//some modules need to be loaded here, because they have to support ajax or affect the login page :-)
 		//load the login selector module if it has been enabled to provide language choise at login screen
-		if ($this->options->enable_login_selector && (is_admin() || defined('DOING_AJAX'))) { 
+		if ($this->options->enable_login_selector /*&& (is_admin() || defined('DOING_AJAX'))*/) { 
 			require_once(dirname(__FILE__).'/loginselector.php');
 			$this->loginselector = new wp_native_dashboard_loginselector();
 			$this->_load_translation_file();

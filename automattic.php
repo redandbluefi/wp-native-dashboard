@@ -6,6 +6,12 @@ if (!function_exists ('add_action')) {
 		exit();
 }
 
+if (!function_exists('esc_js')) {
+	function esc_js($text) {
+		return js_escape($text);
+	}
+}
+
 class wp_native_dashboard_automattic {
 	function wp_native_dashboard_automattic($tagged, $root_tagged) {
 		$this->tagged_version 		= $tagged;
@@ -57,13 +63,13 @@ class wp_native_dashboard_automattic {
 							closeOnEscape: false,
 							modal: true,
 							resizable: false,
-							title: '<b><?php echo js_escape(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
+							title: '<b><?php echo esc_js(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
 							buttons: { 
-								"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+								"<?php echo esc_js(__('Ok', 'wp-native-dashboard')); ?>": function() { 
 									jQuery('#csp-credentials').dialog("close");
 									elem.trigger('click');
 								},
-								"<?php echo js_escape(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
+								"<?php echo esc_js(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
 									elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 									jQuery('#csp-credentials').dialog("close"); 
 								} 
@@ -81,9 +87,9 @@ class wp_native_dashboard_automattic {
 							closeOnEscape: false,
 							modal: true,
 							resizable: false,
-							title: '<b><?php echo js_escape('Error', 'wp-native-dashboard'); ?></b>',
+							title: '<b><?php echo esc_js(__('Error', 'wp-native-dashboard')); ?></b>',
 							buttons: { 
-								"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+								"<?php echo esc_js(__('Ok', 'wp-native-dashboard')); ?>": function() { 
 									elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 									jQuery('#csp-credentials').dialog("close");
 								},
@@ -171,13 +177,13 @@ class wp_native_dashboard_automattic {
 									closeOnEscape: false,
 									modal: true,
 									resizable: false,
-									title: '<b><?php echo js_escape(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
+									title: '<b><?php echo esc_js(__('User Credentials required', 'wp-native-dashboard')); ?></b>',
 									buttons: { 
-										"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+										"<?php echo esc_js(__('Ok', 'wp-native-dashboard')); ?>": function() { 
 											jQuery('#csp-credentials').dialog("close");
 											elem.trigger('click');
 										},
-										"<?php echo js_escape(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
+										"<?php echo esc_js(__('Cancel', 'wp-native-dashboard')); ?>": function() { 
 											elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
 											jQuery('#csp-credentials').dialog("close"); 
 										} 
@@ -195,9 +201,9 @@ class wp_native_dashboard_automattic {
 									closeOnEscape: false,
 									modal: true,
 									resizable: false,
-									title: '<b><?php echo js_escape(__('Error', 'wp-native-dashboard')); ?></b>',
+									title: '<b><?php echo esc_js(__('Error', 'wp-native-dashboard')); ?></b>',
 									buttons: { 
-										"<?php echo js_escape(__('Ok', 'wp-native-dashboard')); ?>": function() { 
+										"<?php echo esc_js(__('Ok', 'wp-native-dashboard')); ?>": function() { 
 											jQuery('#csp-credentials').dialog("close");
 										},
 									},
@@ -288,7 +294,7 @@ class wp_native_dashboard_automattic {
 		$found 			= false;
 		$tagged			= $this->tagged_version;
 		
-		if (!is_wp_error($response_mo)){
+		if (!is_wp_error($response_mo)&&($response_mo['response']['code'] != 404)){
 			if (preg_match("/href\s*=\s*\"".$lang."\.mo\"/", $response_mo['body'])) 
 				$found = true;
 		}
@@ -296,7 +302,7 @@ class wp_native_dashboard_automattic {
 			$url = $url_root;
 			$tagged	= $this->root_tagged_version;
 			$response_mo = @wp_remote_get($url);
-			if (!is_wp_error($response_mo)){
+			if (!is_wp_error($response_mo)&&($response_mo['response']['code'] != 404)){
 				if (preg_match("/href\s*=\s*\"".$lang."\.mo\"/", $response_mo['body'])) 
 					$found = true;
 			}
@@ -424,8 +430,9 @@ class wp_native_dashboard_automattic {
 			if (preg_match('/\/tags\/(\d+\.\d+|\d+\.\d+\.\d+)\/messages/', $_POST['file'], $h)) {
 				$tagged = $h[1];
 			}
+			
 			$response_mo = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/".$file);
-			if(!is_wp_error($response_mo)) {
+			if(!is_wp_error($response_mo) && ($response_mo['response']['code'] != 404)) {
 				ob_start();
 				if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
 					$dir = $wp_filesystem->find_folder(WP_LANG_DIR.'/');
@@ -446,17 +453,62 @@ class wp_native_dashboard_automattic {
 					$done = $wp_filesystem->put_contents($dir.$file, $response_mo['body']);
 					if ($done) {
 						global $wp_version;
-						if (version_compare($wp_version, '2.8', '>=')) {
-							$response_cities_mo = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/continents-cities-".$file);
-							if(!is_wp_error($response_cities_mo)) {
-								$wp_filesystem->put_contents($dir.'continents-cities-'.$file, $response_cities_mo['body']);
+						$additional_download_files = array(
+							//FORMAT:	file system name => ( min-version => 'x.x', 'location' => url, 'alternative' => url)
+							//continent cities translation
+							$dir.'continents-cities-'.$file => array(
+								'min-version' => '2.8',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/continents-cities-".$file,
+								'alternative' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/continents-cities-".$file
+							),
+							//multisite translations
+							$dir.'ms-'.$file => array(
+								'min-version' => '3.0',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/ms-".$file,
+								'alternative' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/ms-".$file
+							),
+							//RTL or language adjustment support
+							$dir.$lang.'.php' => array(
+								'min-version' => '2.0',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.php',
+								'alternative' => false
+							),
+							//language related stylesheet extensions
+							 $dir.$lang.'.css' => array(
+								'min-version' => '3.0',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.css',
+								'alternative' => false
+							),
+							 $dir.$lang.'-ie.css' => array(
+								'min-version' => '3.0',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'-ie.css',
+								'alternative' => false
+							),
+							$dir.'ms-'.$lang.'.css' => array(
+								'min-version' => '3.0',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/ms-".$lang.'.css',
+								'alternative' => false
+							)
+						);
+						
+						foreach($additional_download_files as $fsf => $desc) {
+							if (version_compare($wp_version, $desc['min-version'], '>=')) {
+								$response_additional = @wp_remote_get($desc['location']);
+								if(is_wp_error($response_additional)||($response_additional['response']['code'] == 404)) {
+									if ($desc['alternative'] !== false) {
+										$response_additional = @wp_remote_get($desc['alternative']);
+									}
+								}
+								if(!is_wp_error($response_additional)&&($response_additional['response']['code'] != 404)) {
+									$wp_filesystem->put_contents($fsf, $response_additional['body']);
+								}else {
+									//special turn for required but not yet provided RTL extension files
+									//enables RTL support for affected languages anyway
+									if (($fsf == $dir.$lang.'.php') && wp_native_dashboard_is_rtl_language($lang)) {
+										$wp_filesystem->put_contents($fsf, wp_native_dashboard_rtl_extension_file_content());
+									}
+								}								
 							}
-						}
-						if (wp_native_dashboard_is_rtl_language($lang)) {
-							$content = wp_native_dashboard_rtl_extension_file_content();
-							$response_php = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.php');
-							if(!is_wp_error($response_php)) { $content = $response_php['body']; }
-							$wp_filesystem->put_contents($dir.$lang.'.php', $content);
 						}
 						ob_end_clean();
 						$mo = str_replace('\\', '/', WP_LANG_DIR.'/'.$file);

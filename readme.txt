@@ -2,8 +2,8 @@
 Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
-Tested up to: 2.9
-Stable tag: 1.3.0
+Tested up to: 3.0
+Stable tag: 1.3.1
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
@@ -28,7 +28,7 @@ Starting with version 1.1.0 of this plugin it uses now the WordPress build-in fi
 
 If you have a local WordPress community providing their own download repository for language files, please let me know, if you would like to get it integrated.
 Because i didn't found an official language file repository for BuddyPress and WPMU, it currently only permits WordPress language file downloads.
-If you have more specific informations about, please let me know, it's easy to integrate a new download section (also with detection the kind of WP). 
+If you have more specific informations about, please let me know, it's easy to integrate a new download section (also with detection the kind of WP).
 
 = Requirements =
 
@@ -45,6 +45,14 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 1. Navigate to your Dashboard and enjoy status informations
 
 == Changelog ==
+
+= Version 1.3.1 =
+* clean working debug mode (removed deprecated warnings)
+* bugfix for user specific values during config
+* checked RTL support and reported new trac ticket: http://core.trac.wordpress.org/ticket/14129
+* language download supports now WP 3.0 new capabilities (ms-xx_XX.mo / xx_XX.css / xx_XX-ie.css / ms-xx_XX.css) 
+* bugfix login selector for WP 3.0
+* login permanently denied by some languages like ru_RU (please read Frequently Asked Questions)
 
 = Version 1.3.0 =
 * several checks at PHP 5.3 or higher were missing and may stop some functions
@@ -73,6 +81,12 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 = Where can I get more information? =
 Please visit [the official website](http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en "WP Native Dashboard") for further details, documentation and the latest information on this plugin.
 
+= Why I can't login anymore if I did download and activate as example ru_RU? =
+This happens if you did not define you own phrases inside the wp-config.php file.
+If the default is still in place at any of those defines like define('AUTH_KEY', 'put your unique phrase here'); the internal validation fails.
+The failure reason is the additional file needed for russian language named "ru_RU.php" in cooperation with your wp-config.php file. 
+Inside this file the default phrase has been changed to $wp_default_secret_key = 'впишите сюда уникальную фразу'; instead of original 'put your unique phrase here'.
+This can be solved if you modify the wp-config.php file with your own phases as highly recommended by WP core teams too.
 
 == Screenshots ==
 1. dashboard quick switcher 

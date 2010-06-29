@@ -81,8 +81,9 @@ class wp_native_dashboard_langswitcher {
 	function on_ajax_wp_native_dashboard_change_language() {
 		//TODO: standardize the USER-META behavoir
 		$u = wp_get_current_user();
-		if (!$u->wp_native_dashboard_language) exit();
-		update_usermeta($u->ID, 'wp_native_dashboard_language', $_POST['locale']);
+		
+		if (!isset($u->wp_native_dashboard_language)) exit();
+		update_user_meta($u->ID, 'wp_native_dashboard_language', $_POST['locale']);
 		exit();		
 	}
 	

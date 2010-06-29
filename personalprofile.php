@@ -26,10 +26,10 @@ class wp_native_dashboard_personalprofile {
 				
 				//TODO: standardize the USER-META behavoir
 				$u = wp_get_current_user();
-				if (!$u->wp_native_dashboard_language) {
+				if (!isset($u->wp_native_dashboard_language)){
 					$u->wp_native_dashboard_language = get_locale();
 					//persist it now for later update only
-					update_usermeta($u->ID, 'wp_native_dashboard_language', $u->wp_native_dashboard_language);
+					update_user_meta($u->ID, 'wp_native_dashboard_language', $u->wp_native_dashboard_language);
 				}
 				foreach($langs as $lang) { 
 					echo "<option value=\"$lang\"";
@@ -50,7 +50,7 @@ class wp_native_dashboard_personalprofile {
 	function on_personal_options_update() {
 		//TODO: standardize the USER-META behavoir
 		$u = wp_get_current_user();
-		update_usermeta($u->ID, 'wp_native_dashboard_language', $_POST['wp_native_dashboard_language']);		
+		update_user_meta($u->ID, 'wp_native_dashboard_language', $_POST['wp_native_dashboard_language']);		
 	}
 }
 
