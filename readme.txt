@@ -2,8 +2,8 @@
 Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
-Tested up to: 3.0
-Stable tag: 1.3.1
+Tested up to: 3.0.1
+Stable tag: 1.3.2
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
@@ -45,6 +45,11 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 1. Navigate to your Dashboard and enjoy status informations
 
 == Changelog ==
+
+= Version 1.3.2 =
+* bugfix: avoid javascript error if dashboard langswitcher is off but language eigther gets delete or downloaded
+* bugfix: how to get the icon image of user credential has been changed at WP 3.0 core and gots fixed
+* remark: how to use SSH for downloading files is explained here: [SSH and WordPress](http://www.firesidemedia.net/dev/wordpress-install-upgrade-ssh/ "WordPress Tutorial: Using SSH to Install/Upgrade")
 
 = Version 1.3.1 =
 * clean working debug mode (removed deprecated warnings)

@@ -54,6 +54,9 @@ class wp_native_dashboard_automattic {
 						});
 						
 					});
+					if(typeof csl_refresh_language_switcher == 'function') {
+						csl_refresh_language_switcher();
+					}
 				},
 				error: function(XMLHttpRequest, textStatus, errorThrown) {
 					//handled in next version that also support all file system types
@@ -167,7 +170,9 @@ class wp_native_dashboard_automattic {
 								});
 							});
 							elem.parent().find('.ajax-feedback').css({visibility : 'hidden' });
-							csl_refresh_language_switcher();
+							if(typeof csl_refresh_language_switcher == 'function') {
+								csl_refresh_language_switcher();
+							}
 						},
 						error: function(XMLHttpRequest, textStatus, errorThrown) {
 							//handled in next version that also support all file system types
@@ -327,8 +332,10 @@ class wp_native_dashboard_automattic {
 	
 		if (is_user_logged_in() && current_user_can('manage_options')) {
 			global $wp_filesystem, $parent_file;
+			
 			$current_parent  = $parent_file;
 			$parent_file 	 = 'tools.php'; //needed for screen icon :-)
+			if (function_exists('set_current_screen')) set_current_screen('tools'); //WP 3.0 fix
 			
 			//check the file system
 			ob_start();
@@ -392,6 +399,7 @@ class wp_native_dashboard_automattic {
 			global $wp_filesystem, $parent_file;
 			$current_parent  = $parent_file;
 			$parent_file 	 = 'tools.php'; //needed for screen icon :-)
+			if (function_exists('set_current_screen')) set_current_screen('tools'); //WP 3.0 fix
 						
 			//check the file system
 			ob_start();
