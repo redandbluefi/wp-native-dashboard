@@ -7,7 +7,7 @@ if (!function_exists ('add_action')) {
 }
 
 class wp_native_dashboard_langswitcher {
-	function wp_native_dashboard_langswitcher($plugin_url) {
+	function wp_native_dashboard_langswitcher($plugin_url, $as_head, $as_admin_bar) {
 		global $text_direction;
 		if ($text_direction == 'rtl') 
 			wp_enqueue_style('wp-native-dashboard-css-rtl', $plugin_url.'/css/style-rtl.css');
@@ -16,6 +16,24 @@ class wp_native_dashboard_langswitcher {
 		add_action('admin_head', array(&$this, 'on_admin_head'));
 		add_action('wp_ajax_wp_native_dashboard_change_language', array(&$this, 'on_ajax_wp_native_dashboard_change_language'));
 		add_action('wp_ajax_wp_native_dashboard_refresh_switcher', array(&$this, 'on_ajax_wp_native_dashboard_refresh_switcher'));
+		
+		$this->as_head = $as_head;
+		$this->as_admin_bar = $as_admin_bar;
+		
+		global $wp_admin_bar;
+		if(function_exists('is_admin_bar_showing') && is_admin_bar_showing() && $this->as_admin_bar) {
+			$langs = wp_native_dashboard_collect_installed_languages();
+			$loc = get_locale();
+			
+			$wp_admin_bar->add_menu( array( 'id' => 'wpnd-lang-cur', 'title' => '<span class="csp-'.$loc.'">'.wp_native_dashboard_get_name_of($loc).'</span>', 'href' => '#', 'meta' => array ( 'class' => 'csp-langoption' ) ) );
+			if (count($langs) > 1) {
+				foreach($langs as $lang) {
+					if ($lang != $loc) {
+						$wp_admin_bar->add_menu( array( 'parent' => 'wpnd-lang-cur', 'id' => 'wpnd-lang-'.$lang, 'title' => '<span class="csp-'.$lang.'" hreflang="'.$lang.'">'.wp_native_dashboard_get_name_of($lang).'</span>', 'href' => '#', 'meta' => array ( 'class' => 'csp-langoption csp-langoption-adminbar' ) ) );
+					}
+				}
+			}
+		}
 	}
 	
 	function on_print_dashboard_switcher() {
@@ -41,6 +59,7 @@ class wp_native_dashboard_langswitcher {
 		<script  type="text/javascript">
 		//<![CDATA[
 		function csl_extend_dashboard_header(html) {
+			<?php if($this->as_head) : ?>
 			if (html) {				
 				jQuery("#csp-langswitcher-actions").remove();
 				jQuery("h1:first").before(html);
@@ -51,7 +70,9 @@ class wp_native_dashboard_langswitcher {
 				jQuery(this).blur();
 				jQuery("#csp-langoptions").toggle();
 			});
-			jQuery(".csp-langoption").click(function() {
+			<?php endif; ?>
+			jQuery("a.csp-langoption, li.csp-langoption a span").click(function(event) {
+				event.preventDefault();
 				jQuery(this).blur();
 				jQuery("#csp-langoptions").hide();
 				jQuery.post("admin-ajax.php", { action: 'wp_native_dashboard_change_language', locale: jQuery(this).attr('hreflang') },

@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.2
+Version: 1.3.3
 
 License:
  ==============================================================================
@@ -94,10 +94,14 @@ class wp_native_dashboard {
 		$this->defaults->enable_login_selector 		= false;
 		$this->defaults->enable_profile_extension	= false;
 		$this->defaults->enable_language_switcher 	= false;
+		$this->defaults->enable_adminbar_switcher	= false;
 		$this->defaults->cleanup_on_deactivate		= false;
 		
 		//try to get the options now
 		$this->options								= get_option('wp-native-dashboard', $this->defaults);
+		
+		//compat
+		if (!isset($this->options->enable_adminbar_switcher)) $this->options->enable_adminbar_switcher = false;
 
 		//keep it for later use
 		$this->plugin_url							= WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
@@ -183,7 +187,7 @@ class wp_native_dashboard {
 	
 	//setup the correct user prefered language
 	function on_locale($loc) {
-		$skip = !$this->options->enable_login_selector && !$this->options->enable_profile_extension && !$this->options->enable_language_switcher;
+		$skip = !$this->options->enable_login_selector && !$this->options->enable_profile_extension && !$this->options->enable_language_switcher && !$this->options->enable_adminbar_switcher;
 		if (is_admin() && !$skip) {
 			if (function_exists('wp_get_current_user')) {
 				$u = wp_get_current_user();
@@ -223,9 +227,9 @@ class wp_native_dashboard {
 		//do all stuff while we are at admin center
 		if (is_admin()) {
 			//load the language switcher ajax module if it has been enabled to provide the dropdown extenstion 
-			if ($this->options->enable_language_switcher) { 
+			if ($this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) { 
 				require_once(dirname(__FILE__).'/langswitcher.php');
-				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url);
+				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url, $this->options->enable_language_switcher, $this->options->enable_adminbar_switcher);
 				$this->_load_translation_file();
 				wp_enqueue_script('jquery');
 			}
@@ -303,6 +307,12 @@ class wp_native_dashboard {
 				<input id="enable_language_switcher" type="checkbox" value="1" name="enable_language_switcher"<?php if ($this->options->enable_language_switcher) echo ' checked="checked"'; ?> />
 				<?php _e('extend <em>Admin Center Headline</em> with a language quick selector.', "wp-native-dashboard"); ?>
 			</p>
+			<?php if (function_exists('is_admin_bar_showing')) : ?>
+			<p>
+				<input id="enable_adminbar_switcher" type="checkbox" value="1" name="enable_adminbar_switcher"<?php if ($this->options->enable_adminbar_switcher) echo ' checked="checked"'; ?> />
+				<?php _e('extend <em>WordPress Admin Bar</em> with a language quick selector.', "wp-native-dashboard"); ?>
+			</p>
+			<?php endif; ?>
 			<p class="csp-read-more">
 				<em><a href="javascript:void(0)" onclick="jQuery(this).slideUp();jQuery('#wpf-languages').slideDown();"><?php _e('read more &raquo;', "wp-native-dashboard"); ?></a><span id="wpf-languages" style="display:none;"><?php _e('If you are using one of the current available <a href="http://wordpress.org/extend/plugins/search.php?q=multilingual" target="_blank">multilingual plugins</a>, which permits you writing and publishing posts in several languages, you may also have the need, that native speaking authors should be able to choose their prefered backend language while writing. It\'s your decision if and how this will be possible. This feature set does not impact your frontend language (defined by config or by any multilingual plugin).', "wp-native-dashboard"); ?></span></em>
 			</p>
