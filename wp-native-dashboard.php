@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.3
+Version: 1.3.4
 
 License:
  ==============================================================================
@@ -251,8 +251,12 @@ class wp_native_dashboard {
 
 	//for WordPress 2.8 we have to tell, that we could support 2 columns, but currently only set to 1
 	function on_screen_layout_columns($columns, $screen) {
-		if ($screen == $this->pagehook) {
-			$columns[$this->pagehook] = 1;
+		//bugfix: $this->pagehook is not valid because it will be set at hook 'admin_menu' but 
+		//multisite pages or user dashboard pages calling different menu an menu hooks!
+		if (!defined( 'WP_NETWORK_ADMIN' ) && !defined( 'WP_USER_ADMIN' )) {
+			if ($screen == $this->pagehook) {
+				$columns[$this->pagehook] = 1;
+			}
 		}
 		return $columns;
 	}
