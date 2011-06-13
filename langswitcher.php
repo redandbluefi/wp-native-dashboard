@@ -34,6 +34,12 @@ class wp_native_dashboard_langswitcher {
 				}
 			}
 		}
+		if (function_exists("admin_url")) {
+			$this->admin_url = rtrim(strtolower(admin_url()), '/');
+		}else{
+			$this->admin_url = rtrim(strtolower(get_option('siteurl')).'/wp-admin/', '/');
+		}
+
 	}
 	
 	function on_print_dashboard_switcher() {
@@ -75,7 +81,7 @@ class wp_native_dashboard_langswitcher {
 				event.preventDefault();
 				jQuery(this).blur();
 				jQuery("#csp-langoptions").hide();
-				jQuery.post("admin-ajax.php", { action: 'wp_native_dashboard_change_language', locale: jQuery(this).attr('hreflang') },
+				jQuery.post("<?php echo $this->admin_url; ?>/admin-ajax.php", { action: 'wp_native_dashboard_change_language', locale: jQuery(this).attr('hreflang') },
 					function(data) {
 						window.location.reload();
 					}
