@@ -1,4 +1,5 @@
-﻿=== WP Native Dashboard ===
+﻿
+=== WP Native Dashboard ===
 Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
