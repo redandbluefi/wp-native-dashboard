@@ -40,6 +40,27 @@ class wp_native_dashboard_langswitcher {
 			$this->admin_url = rtrim(strtolower(get_option('siteurl')).'/wp-admin/', '/');
 		}
 
+		add_action( 'bp_adminbar_menus', array(&$this, 'bp_adminbar_switcher_menu') , 1 );
+	}
+	
+	function bp_adminbar_switcher_menu() {
+			$langs = wp_native_dashboard_collect_installed_languages();
+			$loc = get_locale();
+		?>
+		<li id="wp-admin-bar-wpnd-lang-cur" class="csp-langoption"><a href="#"><span><span class="csp-<?php echo $loc; ?>"><?php echo wp_native_dashboard_get_name_of($loc); ?></span></span></a>
+		<?php 			
+			if (count($langs) > 1) {
+				echo '<ul>';
+				foreach($langs as $lang) {
+					if ($lang == $loc) continue;
+				?>
+				<li id="wp-admin-bar-wpnd-lang-<?php echo $lang; ?>" class="csp-langoption csp-langoption-adminbar"><a href="#"><span class="csp-<?php echo $lang; ?>" hreflang="<?php echo $lang; ?>"><?php echo wp_native_dashboard_get_name_of($lang); ?></span></a></li>
+			<?php 
+				} 
+				echo '</ul>';
+			} ?>
+		</li>
+		<?php
 	}
 	
 	function on_print_dashboard_switcher() {
@@ -77,7 +98,7 @@ class wp_native_dashboard_langswitcher {
 				jQuery("#csp-langoptions").toggle();
 			});
 			<?php endif; ?>
-			jQuery("a.csp-langoption, li.csp-langoption a span").click(function(event) {
+			jQuery("a.csp-langoption, li.csp-langoption-adminbar a span").click(function(event) {
 				event.preventDefault();
 				jQuery(this).blur();
 				jQuery("#csp-langoptions").hide();
@@ -91,7 +112,7 @@ class wp_native_dashboard_langswitcher {
 			jQuery('#csp-langswitcher-toggle, #csp-langoptions').bind( 'mouseleave', function(){jQuery('#csp-langoptions').removeClass('slideDown').addClass('slideUp'); setTimeout(function(){if ( jQuery('#csp-langoptions').hasClass('slideUp') ) { jQuery('#csp-langoptions').slideUp(100, function(){ jQuery('#csp-langswitcher-current').removeClass('slide-down'); } ); }}, 300) } );
 		}
 		function csl_refresh_language_switcher() {
-				jQuery.post("admin-ajax.php", { action: 'wp_native_dashboard_refresh_switcher' },
+				jQuery.post("<?php echo $this->admin_url; ?>/admin-ajax.php", { action: 'wp_native_dashboard_refresh_switcher' },
 					function(data) {
 						csl_extend_dashboard_header(data);
 					}

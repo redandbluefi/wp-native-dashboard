@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.5
+Version: 1.3.6
 
 License:
  ==============================================================================
@@ -218,7 +218,7 @@ class wp_native_dashboard {
 			$this->_load_translation_file();
 			if (is_admin()) wp_enqueue_script('jquery');
 		}
-		if (($this->options->enable_login_selector || $this->options->enable_language_switcher) && (is_admin() || defined('DOING_AJAX'))) {
+		if (($this->options->enable_login_selector || $this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) && (is_admin() || defined('DOING_AJAX'))) {
 			require_once(dirname(__FILE__).'/automattic.php');
 			$this->automattic = new wp_native_dashboard_automattic($this->tagged_version, $this->root_tagged_version);
 			$this->_load_translation_file();
@@ -359,7 +359,7 @@ class wp_native_dashboard {
 		<div id="svn-downloads">
 			<div class="progressbar" style="display:none;">
 				<div class="widget" style="height:12px; border:1px solid #DDDDDD; background-color:#F9F9F9;width:100%; margin: 3px 0;">
-					<div class="widget" style="width: <?php echo min($perc, 100.0) ?>%;height:100%;background-color:<?php echo $color; ?>!important;border-width:0px;text-shadow:0 1px 0 #000000;color:#FFFFFF;text-align:right;font-weight:bold;font-size:8px;margin-bottom:4px;"><div style="padding:0 10px 0 0; white-space:nowrap;word-wrap:normal!important;overflow: hidden;"><?php echo $perc; ?>&nbsp;%</div></div>
+					<div class="widget" style="width: <?php echo min($perc, 100.0) ?>%;height:100%;background-color:<?php echo $color; ?>!important;background-image:none;border-width:0px;text-shadow:0 1px 0 #000000;color:#FFFFFF;text-align:right;font-weight:bold;font-size:8px;margin-bottom:4px;"><div style="padding:0 10px 0 0; white-space:nowrap;word-wrap:normal!important;overflow: hidden;"><?php echo $perc; ?>&nbsp;%</div></div>
 				</div>
 			</div>			
 			<table id="table_svn_i18n" class="widefat fixed" cellspacing="0" style="display:none">

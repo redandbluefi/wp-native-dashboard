@@ -87,7 +87,8 @@
 a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 
 #wp-admin-bar-wpnd-lang-cur a span span { padding-left: 24px !important; }
-.csp-langoption-adminbar a span { padding-left: 24px !important; background-position: 2px 8px !important; }
+#wp-admin-bar-wpnd-lang-cur span { display: inline !important; padding-right: 0.4em; }
+.csp-langoption-adminbar a span { padding-left: 24px !important; background-position: 2px top !important; }
 
 .lang-installed { background-color: #E7F7D3 !important; }
 
