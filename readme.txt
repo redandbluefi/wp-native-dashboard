@@ -3,7 +3,7 @@ Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
 Tested up to: 3.4-beta4-20838
-Stable tag: 1.3.6
+Stable tag: 1.3.7
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
@@ -21,6 +21,7 @@ Several options can be enabled and also combinations out of:
 The plugin also includes a repository scan on demand (svn.automattic.com) for available language file downloads.
 You can download the required files into your installation and immediately use them at admin pages.
 The new administration page is restricted to administrators only, the profile setting also work for subscriber.
+The dashboard quick switcher handling has been changed startion WordPress version 3.0 because there is no longer a header. You can use the quickswitcher at the admin bar anyway, this is prefered use case at higher versions of WordPress.
 
 = Download and File Management = 
 
