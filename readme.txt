@@ -2,7 +2,7 @@
 Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
-Tested up to: 3.2
+Tested up to: 3.4-beta4-20838
 Stable tag: 1.3.6
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
@@ -47,6 +47,21 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 1. Navigate to your Dashboard and enjoy status informations
 
 == Changelog ==
+
+= Version 1.3.7 = 
+* bugfix: stylesheet correction for admin bar integration
+* bugfix: svn download doesn't work at some installations but doesn't show the error for
+* bugfix: case sensitive admin url may lead to unpredicable behavior (especially at multisite folder installs)
+* bugfix: WordPress versions equal or higher than 3.0 will not longer support head switcher but admin bar switcher
+* bugfix: downloaded language will be show immediately at the selector dropdown after success.
+* bugfix: delete language file but active selected will be reverted to 'en_US'
+* feature: language search now provides a selectable fallback version for language file downloads
+* feature: supports Galego language
+* feature: supports Mongolian language
+* feature: supports Georgian language
+* feature: supports Uighur language
+* feature: supports Albanian language
+* feature: supports Burmese language
 
 = Version 1.3.6 =
 * feature: supports now BuddyPress own Adminbar to be able to switch the languages.

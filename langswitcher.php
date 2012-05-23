@@ -35,12 +35,15 @@ class wp_native_dashboard_langswitcher {
 			}
 		}
 		if (function_exists("admin_url")) {
-			$this->admin_url = rtrim(strtolower(admin_url()), '/');
+			$this->admin_url = rtrim(admin_url(), '/');
 		}else{
-			$this->admin_url = rtrim(strtolower(get_option('siteurl')).'/wp-admin/', '/');
+			$this->admin_url = rtrim(get_option('siteurl').'/wp-admin/', '/');
 		}
 
 		add_action( 'bp_adminbar_menus', array(&$this, 'bp_adminbar_switcher_menu') , 1 );
+		
+		global $wp_version;
+		$this->no_dashboard_headline = version_compare($wp_version, '3.0', '>=');
 	}
 	
 	function bp_adminbar_switcher_menu() {
@@ -60,6 +63,20 @@ class wp_native_dashboard_langswitcher {
 				echo '</ul>';
 			} ?>
 		</li>
+		<?php
+	}
+	
+	function on_print_admin_bar_switcher() {
+			$langs = wp_native_dashboard_collect_installed_languages();
+			$loc = get_locale();
+		?>
+		<li class="menupop csp-langoption" id="wp-admin-bar-wpnd-lang-cur"><a href="#" aria-haspopup="true" tabindex="10" class="ab-item"><span class="csp-<?php echo $loc; ?>"><?php echo wp_native_dashboard_get_name_of($loc); ?></span></a><div class="ab-sub-wrapper"><ul class="ab-submenu" id="wp-admin-bar-wpnd-lang-cur-default">
+		<?php foreach($langs as $lang) {
+					if ($lang == $loc) continue;
+		?>
+			<li class=" csp-langoption csp-langoption-adminbar" id="wp-admin-bar-wpnd-lang-<?php echo $lang; ?>"><a href="#" tabindex="10" class="ab-item"><span hreflang="<?php echo $lang; ?>" class="csp-<?php echo $lang; ?>"><?php echo wp_native_dashboard_get_name_of($lang); ?></span></a></li>
+		<?php }  ?>
+		</ul></div></li>
 		<?php
 	}
 	
@@ -88,11 +105,29 @@ class wp_native_dashboard_langswitcher {
 		function csl_extend_dashboard_header(html) {
 			<?php if($this->as_head) : ?>
 			if (html) {				
+				<?php if ($this->no_dashboard_headline): ?>
+				jQuery('#wp-admin-bar-wpnd-lang-cur').replaceWith(html);
+				jQuery('#wp-admin-bar-wpnd-lang-cur').hoverIntent({
+					over: function(e){
+						jQuery(this).addClass('hover');
+					},
+					out: function(e){
+						jQuery(this).removeClass('hover');
+					},
+					timeout: 180,
+					sensitivity: 7,
+					interval: 100
+				});
+				<?php else : ?>
 				jQuery("#csp-langswitcher-actions").remove();
 				jQuery("h1:first").before(html);
-			}else{ 
+				<?php endif; ?>
+			}
+			<?php if (!$this->no_dashboard_headline): ?>
+			else{ 
 				jQuery("h1:first").before('<?php $this->on_print_dashboard_switcher(); ?>');
 			}
+			<?php endif; ?>
 			jQuery("#csp-langswitcher").click(function() {
 				jQuery(this).blur();
 				jQuery("#csp-langoptions").toggle();
@@ -136,7 +171,11 @@ class wp_native_dashboard_langswitcher {
 	}
 	
 	function on_ajax_wp_native_dashboard_refresh_switcher() {
-		$this->on_print_dashboard_switcher();
+		if($this->no_dashboard_headline) {
+			$this->on_print_admin_bar_switcher();
+		}else{
+			$this->on_print_dashboard_switcher();
+		}
 		exit();
 	}
 }

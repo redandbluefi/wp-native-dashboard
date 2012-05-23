@@ -120,7 +120,12 @@ class wp_native_dashboard_automattic {
 					jQuery('#svn-downloads .progressbar').show();
 					jQuery('#csp-check-repository').parent().find('.ajax-feedback').css({visibility : 'visible' });
 				}
-				jQuery.post("admin-ajax.php", { action: 'wp_native_dashboard_check_language', language: wp_native_dashboard_repository.langs[idx], row: last_auto_row },
+				jQuery.post("admin-ajax.php", { 
+						action: 'wp_native_dashboard_check_language', 
+						language: wp_native_dashboard_repository.langs[idx], 
+						row: last_auto_row,
+						ver: jQuery('#svn_wp_version').val()
+					},
 					function(data) {
 						if (data != '')	{ 
 							jQuery('#table_svn_i18n>tbody').append(data);
@@ -270,18 +275,18 @@ class wp_native_dashboard_automattic {
 		<script type="text/javascript">
 		//<![CDATA[
 		var wp_native_dashboard_repository = {
-			error: "<?php if(!$error) echo __('The network connection to <strong>svn.automattic.com</strong> is currently not available. Please try again later.', 'wp-native-dashboard'); ?>",
+			error: "<?php if($error) { echo __('The network connection to <strong>svn.automattic.com</strong> is currently not available. Please try again later.', 'wp-native-dashboard'); } ?>",
 			entries: <?php echo count($langs); ?>,
 			langs : ["<?php echo implode('","', $langs); ?>"]
 		}
-		if(wp_native_dashboard_repository.error.length!=0) {
+		if(wp_native_dashboard_repository.error.length==0) {
 			jQuery('#csp-check-repository').hide();
 			jQuery('#table_svn_i18n tbody').html('');
 			analyse_automattic_repository(0);
 		}
 		else {
 			jQuery('#csp-check-repository').hide();
-			jQuery('#table_svn_i18n tbody').html('<tr><td align="center">'+wp_native_dashboard_repository.error+'</td></tr>').parent().show();
+			jQuery('#table_svn_i18n tbody').html('<tr><td align="center">'+wp_native_dashboard_repository.error+'</td></tr><tr><td align="center"><small><em><?php if($error) { echo esc_js(implode('<br/>',$response->get_error_messages())); } ?></em></small></td></tr>').parent().show();
 		}
 		//]]>
 		</script>
@@ -292,9 +297,10 @@ class wp_native_dashboard_automattic {
 	function on_ajax_wp_native_dashboard_check_language() {
 		$lang 			= $_POST['language'];
 		$row 			= $_POST['row'];
+		$ver			= isset($_POST['ver']) ? $_POST['ver'] : $this->root_tagged_version;
 		$installed 		= wp_native_dashboard_collect_installed_languages();
 		$url 			= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$this->tagged_version."/messages/";
-		$url_root		= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$this->root_tagged_version."/messages/";
+		$url_root		= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$ver."/messages/";
 		$response_mo 	= @wp_remote_get($url);
 		$found 			= false;
 		$tagged			= $this->tagged_version;
@@ -305,7 +311,7 @@ class wp_native_dashboard_automattic {
 		}
 		if ($found === false) {
 			$url = $url_root;
-			$tagged	= $this->root_tagged_version;
+			$tagged	= $ver;
 			$response_mo = @wp_remote_get($url);
 			if (!is_wp_error($response_mo)&&($response_mo['response']['code'] != 404)){
 				if (preg_match("/href\s*=\s*\"".$lang."\.mo\"/", $response_mo['body'])) 

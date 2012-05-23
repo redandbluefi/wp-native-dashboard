@@ -83,8 +83,13 @@
 }
 	
 .csp-langoption { display: block; text-decoration: none !important; color:#ddd; padding: 0px 0px 0px 0px;  margin-bottom: 6px; background:transparent url(../img/countries/unknown.gif) no-repeat 2px 3px;}
-.csp-langoption span { padding-left: 24px; } 
+.csp-langoption span, #wp-admin-bar-wpnd-lang-cur span { padding-left: 24px; } 
 a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
+
+#wp-admin-bar-wpnd-lang-cur * { text-shadow: none !important; }
+#wp-admin-bar-wpnd-lang-cur a * , #wp-admin-bar-wpnd-lang-cur.hover > a  > span * { color: #21759B;  }
+#wp-admin-bar-wpnd-lang-cur > a  > span * { color: #fff; }
+
 
 #wp-admin-bar-wpnd-lang-cur a span span { padding-left: 24px !important; }
 #wp-admin-bar-wpnd-lang-cur span { display: inline !important; padding-right: 0.4em; }
@@ -102,7 +107,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-af_AF { background:transparent url(../img/countries/af.gif) no-repeat 2px top !important; } 
 .csp-bn_BD { background:transparent url(../img/countries/bd.gif) no-repeat 2px top !important; }
 .csp-bg_BG { background:transparent url(../img/countries/bg.gif) no-repeat 2px top !important; }
-.csp-zh_CN { background:transparent url(../img/countries/cn.gif) no-repeat 2px top !important; }
+.csp-zh_CN, .csp-ug_CN { background:transparent url(../img/countries/cn.gif) no-repeat 2px top !important; }
 .csp-zh_HK { background:transparent url(../img/countries/hk.gif) no-repeat 2px top !important; }
 .csp-zh_TW { background:transparent url(../img/countries/tw.gif) no-repeat 2px top !important; }
 .csp-cs_CZ { background:transparent url(../img/countries/cz.gif) no-repeat 2px top !important; }
@@ -118,9 +123,9 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-eo, 
 .csp-eo_EO  { background:transparent url(../img/countries/eo.gif) no-repeat 2px top !important; }
 .csp-es, 
-.csp-es_ES, 
-.csp-gl_ES, 
-.csp-ca 	     { background:transparent url(../img/countries/es.gif) no-repeat 2px top !important; }
+.csp-es_ES,  
+.csp-ca  { background:transparent url(../img/countries/es.gif) no-repeat 2px top !important; }
+.csp-gl_ES { background:transparent url(../img/countries/gl.gif) no-repeat 2px top !important; }
 .csp-et, 
 .csp-et_EE  { background:transparent url(../img/countries/ee.gif) no-repeat 2px top !important; }
 .csp-eu, 
@@ -144,6 +149,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-it_IT { background:transparent url(../img/countries/it.gif) no-repeat 2px top !important; }
 .csp-ja, 
 .csp-ja_JP { background:transparent url(../img/countries/jp.gif) no-repeat 2px top !important; }
+.csp-ka_GE { background:transparent url(../img/countries/ka.gif) no-repeat 2px top !important; }
 .csp-ko_KR { background:transparent url(../img/countries/kr.gif) no-repeat 2px top !important; }
 .csp-ky_KY { background:transparent url(../img/countries/ky.gif) no-repeat 2px top !important; }
 .csp-lv, 
@@ -180,3 +186,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-tr_TR, 
 .csp-ckb     { background:transparent url(../img/countries/tr.gif) no-repeat 2px top !important; }
 .csp-uz_UZ { background:transparent url(../img/countries/uz.gif) no-repeat 2px top !important; }
+.csp-mn_MN { background:transparent url(../img/countries/mn.gif) no-repeat 2px top !important; }
+.csp-bs_BA { background:transparent url(../img/countries/ba.gif) no-repeat 2px top !important; }
+.csp-en_CA { background:transparent url(../img/countries/ca.gif) no-repeat 2px top !important; }
+.csp-es_PE { background:transparent url(../img/countries/pe.gif) no-repeat 2px top !important; }

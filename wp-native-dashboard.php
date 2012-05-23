@@ -5,7 +5,7 @@ Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.6
+Version: 1.3.7
 
 License:
  ==============================================================================
@@ -76,7 +76,7 @@ function wp_native_dashboard_get_name_of($locale) {
 }
 
 function wp_native_dashboard_is_rtl_language($locale) {
-	$rtl = array('ar', 'ckb', 'fa', 'he', 'ur');
+	$rtl = array('ar', 'ckb', 'fa', 'he', 'ur', 'ug');
 	return in_array(array_shift(split('_',$locale)), $rtl);
 }
 
@@ -128,6 +128,9 @@ class wp_native_dashboard {
 		add_action('admin_post_wp_native_dashoard_save_settings', array(&$this, 'on_save_settings'));
 		
 		$this->i18n_loaded = false;
+		
+		global $wp_version;
+		$this->no_dashboard_headline = version_compare($wp_version, '3.0', '>=');
 	}
 	
 	//check required versions
@@ -197,6 +200,8 @@ class wp_native_dashboard {
 					else
 						$u->wp_native_dashboard_language = 'en_US';
 				}
+				if(!@file_exists(WP_LANG_DIR.'/' . $u->wp_native_dashboard_language.'.mo')) 
+					return $loc ? $loc : 'en_US';
 				return $u->wp_native_dashboard_language;
 			}
 		}
@@ -229,7 +234,7 @@ class wp_native_dashboard {
 			//load the language switcher ajax module if it has been enabled to provide the dropdown extenstion 
 			if ($this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) { 
 				require_once(dirname(__FILE__).'/langswitcher.php');
-				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url, $this->options->enable_language_switcher, $this->options->enable_adminbar_switcher);
+				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url, $this->options->enable_language_switcher || $this->options->enable_adminbar_switcher, $this->options->enable_adminbar_switcher);
 				$this->_load_translation_file();
 				wp_enqueue_script('jquery');
 			}
@@ -307,10 +312,13 @@ class wp_native_dashboard {
 			</p><p>
 				<input id="enable_profile_extension" type="checkbox" value="1" name="enable_profile_extension"<?php if ($this->options->enable_profile_extension) echo ' checked="checked"'; ?> />
 				<?php _e('extend <a href="profile.php" target="_blank">Personal Profile Settings</a> with users prefered language.', "wp-native-dashboard"); ?>
-			</p><p>
+			</p>
+			<?php if ($this->no_dashboard_headline == FALSE) : ?>
+			<p>
 				<input id="enable_language_switcher" type="checkbox" value="1" name="enable_language_switcher"<?php if ($this->options->enable_language_switcher) echo ' checked="checked"'; ?> />
 				<?php _e('extend <em>Admin Center Headline</em> with a language quick selector.', "wp-native-dashboard"); ?>
 			</p>
+			<?php endif; ?>
 			<?php if (function_exists('is_admin_bar_showing')) : ?>
 			<p>
 				<input id="enable_adminbar_switcher" type="checkbox" value="1" name="enable_adminbar_switcher"<?php if ($this->options->enable_adminbar_switcher) echo ' checked="checked"'; ?> />
@@ -349,13 +357,43 @@ class wp_native_dashboard {
 		<?php	
 	}
 
+	function __list_versions_by_de_de() {
+		$url 		= 'http://svn.automattic.com/wordpress-i18n/de_DE/tags/';
+		$response = @wp_remote_get($url);
+		$error = is_wp_error($response);
+		$versions = array();
+		if(!$error) {
+			$lines = split("\n",$response['body']);
+			foreach($lines as $line) {
+				if (preg_match("/href\s*=\s*\"(\S+)\/\"/", $line, $hits)) {
+					if (in_array($hits[1], array('..', 'http://subversion.tigris.org'))) continue;
+					$versions[] = $hits[1];
+				}
+			}
+			sort($versions);
+		}
+		return array_reverse($versions);
+	}
+	
 	function on_print_metabox_automattic_i18n() {
+		global $wp_version;
 		$color = '#21759B';
 		$perc = 0.0;
 		$revision = null;
 		?>
 		<p><?php echo sprintf(__('A lot of languages should be provided by polyglott translation teams as download into your WordPress installation.','wp-native-dashboard'), $revision); ?></p>
-		<p class="csp-read-more center"><?php _e('Available for download:', 'wp-native-dashboard'); ?> <a id="csp-check-repository" href="#svn"><?php _e('check repository &raquo;','wp-native-dashboard'); ?></a> <span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span></p>
+		<p class="csp-read-more center">
+			<?php 
+				_e('Available for download:', 'wp-native-dashboard'); 
+				$versions = $this->__list_versions_by_de_de();
+				if(count($versions) > 0) {
+					echo "<select id=\"svn_wp_version\" name=\"svn_wp_version\">";
+					foreach($versions as $version) {
+						echo "<option value=\"$version\"";selected($wp_version, $version);echo">$version</option>";
+					}
+					echo "</select>";
+				}
+			?> <a id="csp-check-repository" href="#svn"><?php _e('check repository &raquo;','wp-native-dashboard'); ?></a> <span><img src="images/loading.gif" class="ajax-feedback" title="" alt="" /></span></p>
 		<div id="svn-downloads">
 			<div class="progressbar" style="display:none;">
 				<div class="widget" style="height:12px; border:1px solid #DDDDDD; background-color:#F9F9F9;width:100%; margin: 3px 0;">

@@ -85,14 +85,19 @@ html:first-child>b\ody #csp-langswitcher-current span { padding-right: 0px !impo
 }
 	
 .csp-langoption { display: block; text-decoration: none !important; color:#ddd; padding: 0px 0px 2px 0px;  background:transparent url(../img/countries/unknown.gif) no-repeat right 4px;}
-.csp-langoption span {padding-right: 24px;} 
+.csp-langoption span, #wp-admin-bar-wpnd-lang-cur span { padding-right: 24px; } 
 html:first-child>b\ody .csp-langoption span { padding-right: 0 !important; padding-left: 24px; } /*opera*/
 *:first-child + html .csp-langoption span { padding-right: 0 !important; padding-left: 24px; } /*IE*/
 
 a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 
+#wp-admin-bar-wpnd-lang-cur * { text-shadow: none !important; }
+#wp-admin-bar-wpnd-lang-cur a * , #wp-admin-bar-wpnd-lang-cur.hover > a  > span * { color: #21759B;  }
+#wp-admin-bar-wpnd-lang-cur > a  > span * { color: #fff; }
+
+
 #wp-admin-bar-wpnd-lang-cur a span span { padding-right: 24px !important; }
-.csp-langoption-adminbar a span { padding-right: 24px !important; background-position: 2px 8px !important; }
+.csp-langoption-adminbar a span { padding-right: 24px !important; }
 
 .lang-installed { background-color: #E7F7D3 !important; }
 
@@ -106,7 +111,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-af, .csp-af_AF { background:transparent url(../img/countries/af.gif) no-repeat right 2px !important; } 
 .csp-bn_BD { background:transparent url(../img/countries/bd.gif) no-repeat right 2px !important; }
 .csp-bg_BG { background:transparent url(../img/countries/bg.gif) no-repeat right 2px !important; }
-.csp-zh_CN { background:transparent url(../img/countries/cn.gif) no-repeat right 2px !important; }
+.csp-zh_CN, .csp-ug_CN { background:transparent url(../img/countries/cn.gif) no-repeat right 2px !important; }
 .csp-zh_HK { background:transparent url(../img/countries/hk.gif) no-repeat right 2px !important; }
 .csp-zh_TW { background:transparent url(../img/countries/tw.gif) no-repeat right 2px !important; }
 .csp-cs_CZ { background:transparent url(../img/countries/cz.gif) no-repeat right 2px !important; }
@@ -118,7 +123,8 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-en_US { background:transparent url(../img/countries/us.gif) no-repeat right 2px !important; }
 .csp-eo, .csp-eo_EO  { background:transparent url(../img/countries/eo.gif) no-repeat right 2px !important; }
 .csp-et, .csp-et_EE  { background:transparent url(../img/countries/ee.gif) no-repeat right 2px !important; }
-.csp-es, .csp-es_ES, .csp-gl_ES, .csp-ca { background:transparent url(../img/countries/es.gif) no-repeat right 2px !important; }
+.csp-es, .csp-es_ES, .csp-ca { background:transparent url(../img/countries/es.gif) no-repeat right 2px !important; }
+.csp-gl_ES { background:transparent url(../img/countries/gl.gif) no-repeat right 2px !important; }
 .csp-eu, .csp-eu_ES  { background:transparent url(../img/countries/eu.gif) no-repeat right 2px !important; }
 .csp-fa_IR { background:transparent url(../img/countries/ir.gif) no-repeat right 2px !important; }
 .csp-fi, .csp-fi_FI { background:transparent url(../img/countries/fi.gif) no-repeat right 2px !important; }
@@ -132,6 +138,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-id_ID, .csp-su_ID { background:transparent url(../img/countries/id.gif) no-repeat right 2px !important; }
 .csp-it_IT { background:transparent url(../img/countries/it.gif) no-repeat right 2px !important; }
 .csp-ja, .csp-ja_JP { background:transparent url(../img/countries/jp.gif) no-repeat right 2px !important; }
+.csp-ka_GE { background:transparent url(../img/countries/ka.gif) no-repeat right 2px !important; }
 .csp-ko_KR { background:transparent url(../img/countries/kr.gif) no-repeat right 2px !important; }
 .csp-ky_KY { background:transparent url(../img/countries/ky.gif) no-repeat right 2px !important; }
 .csp-lv, .csp-lv_LV { background:transparent url(../img/countries/lv.gif) no-repeat right 2px !important; }
@@ -158,3 +165,7 @@ a.csp-langoption:hover { background-color: #FFFABF !important; color: #000; }
 .csp-th, .csp-th_TH { background:transparent url(../img/countries/th.gif) no-repeat right 2px !important; }
 .csp-tr, .csp-tr_TR, .csp-ckb { background:transparent url(../img/countries/tr.gif) no-repeat right 2px !important; }
 .csp-uz_UZ { background:transparent url(../img/countries/uz.gif) no-repeat right 2px !important; }
+.csp-mn_MN { background:transparent url(../img/countries/mn.gif) no-repeat right 2px !important; }
+.csp-bs_BA { background:transparent url(../img/countries/ba.gif) no-repeat right 2px !important; }
+.csp-en_CA { background:transparent url(../img/countries/ca.gif) no-repeat right 2px !important; }
+.csp-es_PE { background:transparent url(../img/countries/pe.gif) no-repeat right 2px !important; }
