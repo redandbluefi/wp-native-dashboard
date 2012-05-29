@@ -45,7 +45,7 @@ class wp_native_dashboard_langswitcher {
 		global $wp_version;
 		$this->no_dashboard_headline = version_compare($wp_version, '3.0', '>=');
 	}
-	
+		
 	function bp_adminbar_switcher_menu() {
 			$langs = wp_native_dashboard_collect_installed_languages();
 			$loc = get_locale();

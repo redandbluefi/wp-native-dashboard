@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: WP Native Dashboard
-Plugin URI: 	http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en
+Plugin URI: http://www.code-styling.de/english/development/wordpress-plugin-wp-native-dashboard-en
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.7
+Version: 1.3.8
 
 License:
  ==============================================================================
- Copyright 2009 Heiko Rabe  (email : info@code-styling.de)
+ Copyright 2009-2012 Heiko Rabe  (email : info@code-styling.de)
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -95,6 +95,7 @@ class wp_native_dashboard {
 		$this->defaults->enable_profile_extension	= false;
 		$this->defaults->enable_language_switcher 	= false;
 		$this->defaults->enable_adminbar_switcher	= false;
+		$this->defaults->translate_front_adminbar	= false;
 		$this->defaults->cleanup_on_deactivate		= false;
 		
 		//try to get the options now
@@ -102,6 +103,7 @@ class wp_native_dashboard {
 		
 		//compat
 		if (!isset($this->options->enable_adminbar_switcher)) $this->options->enable_adminbar_switcher = false;
+		if (!isset($this->options->translate_front_adminbar)) $this->options->translate_front_adminbar = false;
 
 		//keep it for later use
 		$this->plugin_url							= WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
@@ -191,7 +193,7 @@ class wp_native_dashboard {
 	//setup the correct user prefered language
 	function on_locale($loc) {
 		$skip = !$this->options->enable_login_selector && !$this->options->enable_profile_extension && !$this->options->enable_language_switcher && !$this->options->enable_adminbar_switcher;
-		if (is_admin() && !$skip) {
+		if ((is_admin() && !$skip) || ($this->options->translate_front_adminbar && isset($_REQUEST['wpnd']) && $_REQUEST['wpnd'] == 'translate_front_adminbar')) {
 			if (function_exists('wp_get_current_user')) {
 				$u = wp_get_current_user();
 				if (!isset($u->wp_native_dashboard_language)) {
@@ -200,7 +202,8 @@ class wp_native_dashboard {
 					else
 						$u->wp_native_dashboard_language = 'en_US';
 				}
-				if(!@file_exists(WP_LANG_DIR.'/' . $u->wp_native_dashboard_language.'.mo')) 
+				
+				if(($u->wp_native_dashboard_language != 'en_US') && !@file_exists(WP_LANG_DIR.'/' . $u->wp_native_dashboard_language.'.mo')) 
 					return $loc ? $loc : 'en_US';
 				return $u->wp_native_dashboard_language;
 			}
@@ -239,6 +242,47 @@ class wp_native_dashboard {
 				wp_enqueue_script('jquery');
 			}
 		}		
+		
+		//front end admin bar handling
+		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in()) {
+			wp_enqueue_script('jquery');
+			if (isset($_REQUEST['wpnd']) && $_REQUEST['wpnd'] == 'translate_front_adminbar') {
+				ob_start(array(&$this, 'on_translated_frontend_adminbar'));
+				add_action('wp_before_admin_bar_render', array(&$this, 'on_before_admin_bar_render_rip_on'), 0);
+				add_action('wp_after_admin_bar_render', array(&$this, 'on_after_admin_bar_render_park_content'),9999);
+			}else{
+				add_action('wp_before_admin_bar_render', array(&$this, 'on_before_admin_bar_render_rip_on'), 0);
+				add_action('wp_after_admin_bar_render', array(&$this, 'on_after_admin_bar_render_rip_off'),9999);
+			}
+		}
+	}
+
+	function on_before_admin_bar_render_rip_on() {
+		ob_start();
+	}
+	
+	function on_after_admin_bar_render_rip_off() {
+		ob_end_clean();
+		//replace frontend admin bar markup and script with jquery loader, that is abel to translate the bar
+		global $wp, $wp_rewrite;
+		$query_string = $wp_rewrite->using_permalinks() ? '' : $wp->query_string;
+		$query_string = (empty($query_string) ? $query_string.'?' : $query_string.'&').'wpnd=translate_front_adminbar';
+		$current_url = add_query_arg( $query_string, '', home_url( $wp->request ) );			
+		?>
+		<script type="text/javascript">
+		jQuery.get("<?php echo $current_url; ?>", function(data) {
+			jQuery('body').append(data);
+		});
+		</script>
+		<?php
+	}
+	
+	function on_after_admin_bar_render_park_content() {
+		$this->parked_admin_bar = ob_get_clean();
+	}
+	
+	function on_translated_frontend_adminbar($content) {
+		return $this->parked_admin_bar;
 	}
 	
 	function on_admin_menu() {
@@ -322,7 +366,11 @@ class wp_native_dashboard {
 			<?php if (function_exists('is_admin_bar_showing')) : ?>
 			<p>
 				<input id="enable_adminbar_switcher" type="checkbox" value="1" name="enable_adminbar_switcher"<?php if ($this->options->enable_adminbar_switcher) echo ' checked="checked"'; ?> />
-				<?php _e('extend <em>WordPress Admin Bar</em> with a language quick selector.', "wp-native-dashboard"); ?>
+				<?php _e('extend <em>Backend Admin Bar</em> with a language quick selector.', "wp-native-dashboard"); ?>
+			</p>
+			<p>
+				<input id="translate_front_adminbar" type="checkbox" value="1" name="translate_front_adminbar"<?php if ($this->options->translate_front_adminbar) echo ' checked="checked"'; ?> />
+				<?php _e('translate <em>Frontend Admin Bar</em> using backend selected language.', "wp-native-dashboard"); ?>
 			</p>
 			<?php endif; ?>
 			<p class="csp-read-more">
@@ -430,7 +478,7 @@ class wp_native_dashboard {
 						<?php do_meta_boxes($this->pagehook, 'normal', $data); ?>
 						<br/>
 						<p class="csp-read-more">
-							<span class="alignright csp-copyright">copyright &copy 2008 - 2009 by Heiko Rabe</span>
+							<span class="alignright csp-copyright">copyright &copy 2008 - 2012 by Heiko Rabe</span>
 							<label for="cleanup_on_deactivate" class="alignleft">
 								<input id="cleanup_on_deactivate" type="checkbox" value="1" name="cleanup_on_deactivate"<?php if ($this->options->cleanup_on_deactivate) echo ' checked="checked"'; ?> />
 								<span class="csp-warning"><?php _e('cleanup all settings at plugin deactivation.', 'wp-native-dashboard'); ?></span>

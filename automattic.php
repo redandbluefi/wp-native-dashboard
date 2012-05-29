@@ -386,8 +386,14 @@ class wp_native_dashboard_automattic {
 			ob_start();
 			if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
 				if($wp_filesystem->delete($filename)) {
-					$wp_filesystem->delete(substr($filename, 0, -2).'php');
 					$wp_filesystem->delete($dir.'continents-cities-'.$file);
+					$wp_filesystem->delete($dir.'ms-'.$file);
+					$wp_filesystem->delete($dir.'admin-'.$file);
+					$wp_filesystem->delete($dir.'admin-network-'.$file);
+					$wp_filesystem->delete(substr($filename, 0, -2).'php');
+					$wp_filesystem->delete(substr($filename, 0, -2).'css');
+					$wp_filesystem->delete(substr($filename, 0, -3).'-ie.css');
+					$wp_filesystem->delete($dir.'ms-'.substr($file, 0, -2).'css');
 					ob_end_clean();
 					exit();
 				}
@@ -481,6 +487,18 @@ class wp_native_dashboard_automattic {
 								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/ms-".$file,
 								'alternative' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/ms-".$file
 							),
+							//admin file (3.4)
+							$dir.'admin-'.$file => array(
+								'min-version' => '3.4',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/admin-".$file,
+								'alternative' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/admin-".$file
+							),
+							//admin network file (3.4)
+							$dir.'admin-network-'.$file => array(
+								'min-version' => '3.4',
+								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/admin-network-".$file,
+								'alternative' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/admin-network-".$file
+							),
 							//RTL or language adjustment support
 							$dir.$lang.'.php' => array(
 								'min-version' => '2.0',
@@ -488,12 +506,12 @@ class wp_native_dashboard_automattic {
 								'alternative' => false
 							),
 							//language related stylesheet extensions
-							 $dir.$lang.'.css' => array(
+							$dir.$lang.'.css' => array(
 								'min-version' => '3.0',
 								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'.css',
 								'alternative' => false
 							),
-							 $dir.$lang.'-ie.css' => array(
+							$dir.$lang.'-ie.css' => array(
 								'min-version' => '3.0',
 								'location' => "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/dist/wp-content/languages/".$lang.'-ie.css',
 								'alternative' => false
@@ -518,7 +536,7 @@ class wp_native_dashboard_automattic {
 								}else {
 									//special turn for required but not yet provided RTL extension files
 									//enables RTL support for affected languages anyway
-									if (($fsf == $dir.$lang.'.php') && wp_native_dashboard_is_rtl_language($lang)) {
+									if (($fsf == $dir.$lang.'.php') && wp_native_dashboard_is_rtl_language($lang) && version_compare($wp_version, '3.4-alpha', '<')) {
 										$wp_filesystem->put_contents($fsf, wp_native_dashboard_rtl_extension_file_content());
 									}
 								}								
