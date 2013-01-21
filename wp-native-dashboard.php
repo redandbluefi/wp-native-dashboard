@@ -5,11 +5,12 @@ Plugin URI: http://www.code-styling.de/english/development/wordpress-plugin-wp-n
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.9
+Version: 1.3.10
+Text Domain: wp-native-dashboard
 
 License:
  ==============================================================================
- Copyright 2009-2012 Heiko Rabe  (email : info@code-styling.de)
+ Copyright 2009-2013 Heiko Rabe  (email : info@code-styling.de)
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -233,6 +234,7 @@ class wp_native_dashboard {
 		if ((is_admin() && !$skip) || ($this->options->translate_front_adminbar && $this->user_agent_is_wp_native_dashboard)) {
 			if (function_exists('wp_get_current_user')) {
 				$u = wp_get_current_user();
+				if (!is_object($u) || $u->ID == 0) return $loc; //bugfix: for ajax based login's
 				if (!isset($u->wp_native_dashboard_language)) {
 					if ($loc) 
 						$u->wp_native_dashboard_language = $loc;
@@ -319,8 +321,13 @@ class wp_native_dashboard {
 			 //$cookie->domain = get_site_url();
 			 $cookies[] = $cookie;
 		}
+
+		$requested_url  = is_ssl() ? 'https://' : 'http://';
+		$requested_url .= $_SERVER['HTTP_HOST'];
+		$requested_url .= $_SERVER['REQUEST_URI'];
+
 		$response = wp_remote_get(
-			get_site_url().$_SERVER["REQUEST_URI"], 
+			$requested_url, 
 			array(
 				'sslverify' => false,
 				'cookies' => $cookies,
@@ -420,7 +427,7 @@ class wp_native_dashboard {
 	<?php _e('While get in touch with WordPress you will find out, that the initial delivery package comes only with english localization. If you want WordPress to show your native language, you have to provide the appropriated language file at languages folder. This files will be used to replace the english text phrases during the process of page generation. This translation capability has the origin at the gettext functionality which currently been used across a wide range of open source projects.', "wp-native-dashboard"); ?>
 	</p>
 	<p style="margin-top: 50px;padding-top:10px; border-top: solid 1px #ccc;">
-		<small class="alignright" style="position:relative; margin-top: -30px; color: #aaa;">&copy; 2008 - 2012 by Heiko Rabe</small>
+		<small class="alignright" style="position:relative; margin-top: -30px; color: #aaa;">&copy; 2008 - 2013 by Heiko Rabe</small>
 		<a href="http://wordpress.org/extend/plugins/wp-native-dashboard/" target="_blank">Plugin Directory</a> | 
 		<a href="http://wordpress.org/extend/plugins/wp-native-dashboard/changelog/" target="_blank">Change Logs</a> | 
 		<a href="<?php echo $this->plugin_url."/license.txt";?>" target="_blank">License</a> 
@@ -585,7 +592,7 @@ class wp_native_dashboard {
 						<?php do_meta_boxes($this->pagehook, 'normal', $data); ?>
 						<br/>
 						<p class="csp-read-more">
-							<span class="alignright csp-copyright">copyright &copy 2008 - 2012 by Heiko Rabe</span>
+							<span class="alignright csp-copyright">copyright &copy 2008 - 2013 by Heiko Rabe</span>
 							<label for="cleanup_on_deactivate" class="alignleft">
 								<input id="cleanup_on_deactivate" type="checkbox" value="1" name="cleanup_on_deactivate"<?php if ($this->options->cleanup_on_deactivate) echo ' checked="checked"'; ?> />
 								<span class="csp-warning"><?php _e('cleanup all settings at plugin deactivation.', 'wp-native-dashboard'); ?></span>
