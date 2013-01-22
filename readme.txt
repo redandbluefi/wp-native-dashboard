@@ -2,8 +2,8 @@
 Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
-Tested up to: 3.4-RC1
-Stable tag: 1.3.8
+Tested up to: 3.5
+Stable tag: 1.3.10
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
@@ -48,6 +48,19 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 1. Navigate to your Dashboard and enjoy status informations
 
 == Changelog ==
+
+= Version 1.3.10 =
+* bugfix: ajax based login plugins (sidebar logins) did not work as expected
+* bugfix: admin bar translations was broken, if WordPress is installed at sub folder
+* bugfix: flag for en_GB provided
+* feature: added 299 locales to ensure full support
+
+= Version 1.3.9 =
+* bugfix: using SSL either forced or fully did produce a mixed mode admin page delivery
+* bugfix: translation of frontend admin bar now works with any type of extension (includes debug-bar plugin).
+* feature: added plugin help screen for WordPress >= 3.3
+* feature: additional option to remove locale abbreviation brackets
+* feature: new option for using login language selector within your own login plugins/widgets (see help screen)
 
 = Version 1.3.8 =
 * bugfix: build in language "en_US" could not longer be selected, if WPLANG explicitely defined.

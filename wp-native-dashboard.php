@@ -5,11 +5,12 @@ Plugin URI: http://www.code-styling.de/english/development/wordpress-plugin-wp-n
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.8
+Version: 1.3.10
+Text Domain: wp-native-dashboard
 
 License:
  ==============================================================================
- Copyright 2009-2012 Heiko Rabe  (email : info@code-styling.de)
+ Copyright 2009-2013 Heiko Rabe  (email : info@code-styling.de)
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -31,6 +32,14 @@ if (!function_exists ('add_action')) {
 		header('Status: 403 Forbidden');
 		header('HTTP/1.1 403 Forbidden');
 		exit();
+}
+
+if (!function_exists('plugins_url')) {
+	function plugins_url($plugin) {  return WP_PLUGIN_URL . '/' . dirname(plugin_basename($plugin)); }
+}
+
+if (!function_exists('get_site_url')) {
+	function get_site_url() { return get_option('site_url'); }
 }
 
 if ( !defined('WP_PLUGIN_URL') ) 
@@ -69,10 +78,11 @@ if(!function_exists('update_user_meta')) {
 }
 
 function wp_native_dashboard_get_name_of($locale) {
-	global $wpnd_language_names;
+	global $wpnd_language_names, $my_wp_native_dashboard;
 	list($lang,) = explode('_', $locale);
 	$name = isset($wpnd_language_names[$lang]) ? $wpnd_language_names[$lang] : __('-n.a.-', 'wp-native-dashboard');
-	return '<b>'.$name .'</b>&nbsp;<i>('.$locale.')</i>';
+	$abbr = ($my_wp_native_dashboard->with_abbreviations() ? "&nbsp;<i>($locale)</i>" : ''); 
+	return "<b>$name</b>$abbr";
 }
 
 function wp_native_dashboard_is_rtl_language($locale) {
@@ -84,6 +94,12 @@ function wp_native_dashboard_rtl_extension_file_content() {
 	return '<?php'."\n".'$text_direction = \'rtl\';'."\n".'?>"';
 }
 	
+function wp_native_dashboard_custom_language_selector() { 
+	global $my_wp_native_dashboard;
+	if($my_wp_native_dashboard->with_tag_support())
+		do_action('login_form'); 
+}
+
 class wp_native_dashboard {
 
 	function wp_native_dashboard() {
@@ -92,9 +108,11 @@ class wp_native_dashboard {
 		$this->defaults->version					= '1.0';
 		$this->defaults->installed					= false;
 		$this->defaults->enable_login_selector 		= false;
+		$this->defaults->enable_login_custom		= false;
 		$this->defaults->enable_profile_extension	= false;
 		$this->defaults->enable_language_switcher 	= false;
 		$this->defaults->enable_adminbar_switcher	= false;
+		$this->defaults->enable_locale_abbreviations= false;
 		$this->defaults->translate_front_adminbar	= false;
 		$this->defaults->cleanup_on_deactivate		= false;
 		
@@ -104,9 +122,12 @@ class wp_native_dashboard {
 		//compat
 		if (!isset($this->options->enable_adminbar_switcher)) $this->options->enable_adminbar_switcher = false;
 		if (!isset($this->options->translate_front_adminbar)) $this->options->translate_front_adminbar = false;
+		if (!isset($this->options->enable_locale_abbreviations)) $this->options->enable_locale_abbreviations = true;
+		if (!isset($this->options->enable_login_custom)) $this->options->enable_login_custom = false;
 
 		//keep it for later use
-		$this->plugin_url							= WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
+		//bugfix: for FORCE_SSL_ADMIN / $this->plugin_url = WP_PLUGIN_URL.'/'.dirname(plugin_basename(__FILE__));
+		$this->plugin_url							= plugins_url(dirname(plugin_basename(__FILE__)));
 				
 		//detect the current main version
 		global $wp_version;
@@ -114,7 +135,7 @@ class wp_native_dashboard {
 		$this->root_tagged_version = $hits[1].'.'.$hits[2];
 		$this->tagged_version = $this->root_tagged_version;
 		if (!empty($hits[3])) $this->tagged_version .= '.'.$hits[3];
-
+		
 		//register at plugin activation/deactivation hooks
 		register_activation_hook(plugin_basename(__FILE__), array(&$this, 'activate_plugin'));
 		register_deactivation_hook(plugin_basename(__FILE__), array(&$this, 'deactivate_plugin'));		
@@ -133,6 +154,23 @@ class wp_native_dashboard {
 		
 		global $wp_version;
 		$this->no_dashboard_headline = version_compare($wp_version, '3.0', '>=');
+		
+		$this->user_agent_is_wp_native_dashboard = ($_SERVER["HTTP_USER_AGENT"] == "WP_NATIVE_DASHBOARD");
+		
+		if ( $this->user_agent_is_wp_native_dashboard ) {
+			//suppress all except the frontend admin bar rendering
+			ob_start();
+			add_action('shutdown', array(&$this, 'on_shutdown_render_admin_bar'), 0);
+		}
+				
+	}
+	
+	function with_abbreviations() {
+		return $this->options->enable_locale_abbreviations;
+	}
+	
+	function with_tag_support() {
+		return $this->options->enable_login_custom;
 	}
 	
 	//check required versions
@@ -193,9 +231,10 @@ class wp_native_dashboard {
 	//setup the correct user prefered language
 	function on_locale($loc) {
 		$skip = !$this->options->enable_login_selector && !$this->options->enable_profile_extension && !$this->options->enable_language_switcher && !$this->options->enable_adminbar_switcher;
-		if ((is_admin() && !$skip) || ($this->options->translate_front_adminbar && isset($_REQUEST['wpnd']) && $_REQUEST['wpnd'] == 'translate_front_adminbar')) {
+		if ((is_admin() && !$skip) || ($this->options->translate_front_adminbar && $this->user_agent_is_wp_native_dashboard)) {
 			if (function_exists('wp_get_current_user')) {
 				$u = wp_get_current_user();
+				if (!is_object($u) || $u->ID == 0) return $loc; //bugfix: for ajax based login's
 				if (!isset($u->wp_native_dashboard_language)) {
 					if ($loc) 
 						$u->wp_native_dashboard_language = $loc;
@@ -222,7 +261,7 @@ class wp_native_dashboard {
 		//load the login selector module if it has been enabled to provide language choise at login screen
 		if ($this->options->enable_login_selector /*&& (is_admin() || defined('DOING_AJAX'))*/) { 
 			require_once(dirname(__FILE__).'/loginselector.php');
-			$this->loginselector = new wp_native_dashboard_loginselector();
+			$this->loginselector = new wp_native_dashboard_loginselector($this->options->enable_login_custom);
 			$this->_load_translation_file();
 			if (is_admin()) wp_enqueue_script('jquery');
 		}
@@ -244,47 +283,61 @@ class wp_native_dashboard {
 		}		
 		
 		//front end admin bar handling
-		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in()) {
-			wp_enqueue_script('jquery');
-			if (isset($_REQUEST['wpnd']) && $_REQUEST['wpnd'] == 'translate_front_adminbar') {
-				ob_start(array(&$this, 'on_translated_frontend_adminbar'));
-				add_action('wp_before_admin_bar_render', array(&$this, 'on_before_admin_bar_render_rip_on'), 0);
-				add_action('wp_after_admin_bar_render', array(&$this, 'on_after_admin_bar_render_park_content'),9999);
-			}else{
-				add_action('wp_before_admin_bar_render', array(&$this, 'on_before_admin_bar_render_rip_on'), 0);
-				add_action('wp_after_admin_bar_render', array(&$this, 'on_after_admin_bar_render_rip_off'),9999);
-			}
+		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in() && !$this->user_agent_is_wp_native_dashboard) {
+			add_action('wp_before_admin_bar_render', array(&$this, 'on_start_suppress_admin_bar'), 0);
+			add_action('wp_after_admin_bar_render', array(&$this, 'on_request_suppressed_admin_bar_translated'),9999);
+		}
+		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in() && $this->user_agent_is_wp_native_dashboard) {
+			add_action('wp_before_admin_bar_render', array(&$this, 'on_start_capture_admin_bar'), 0);
+			add_action('wp_after_admin_bar_render', array(&$this, 'on_end_capture_admin_bar'), 9999);
 		}
 	}
-
-	function on_before_admin_bar_render_rip_on() {
+	
+	function on_start_capture_admin_bar() {
 		ob_start();
 	}
 	
-	function on_after_admin_bar_render_rip_off() {
+	function on_end_capture_admin_bar() {
+		$this->frontend_admin_bar = ob_get_clean();
+	}
+	
+	function on_shutdown_render_admin_bar() {
 		ob_end_clean();
-		//replace frontend admin bar markup and script with jquery loader, that is abel to translate the bar
-		global $wp, $wp_rewrite;
-		$query_string = $wp_rewrite->using_permalinks() ? '' : $wp->query_string;
-		$query_string = (empty($query_string) ? $query_string.'?' : $query_string.'&').'wpnd=translate_front_adminbar';
-		$current_url = add_query_arg( $query_string, '', home_url( $wp->request ) );			
-		?>
-		<script type="text/javascript">
-		jQuery.get("<?php echo $current_url; ?>", function(data) {
-			jQuery('body').append(data);
-		});
-		</script>
-		<?php
+		echo $this->frontend_admin_bar;
+	}
+	function on_start_suppress_admin_bar() {
+		ob_start();
 	}
 	
-	function on_after_admin_bar_render_park_content() {
-		$this->parked_admin_bar = ob_get_clean();
+	function on_request_suppressed_admin_bar_translated() {
+		ob_end_clean();
+		$cookies = array();
+		foreach($_COOKIE as $key => $val) {
+			 $cookie = new WP_Http_Cookie( $key );
+			 $cookie->name = $key;
+			 $cookie->value = $val;
+			 $cookie->expires = mktime( 0, 0, 0, date('m'), date('d') + 7, date('Y') ); // expires in 7 days
+			 $cookie->path = '/';
+			 //$cookie->domain = get_site_url();
+			 $cookies[] = $cookie;
+		}
+
+		$requested_url  = is_ssl() ? 'https://' : 'http://';
+		$requested_url .= $_SERVER['HTTP_HOST'];
+		$requested_url .= $_SERVER['REQUEST_URI'];
+
+		$response = wp_remote_get(
+			$requested_url, 
+			array(
+				'sslverify' => false,
+				'cookies' => $cookies,
+				'user-agent' => 'WP_NATIVE_DASHBOARD'
+			)
+		);
+		if (!is_object($response) && isset($response['body']))
+			echo $response['body'];
 	}
-	
-	function on_translated_frontend_adminbar($content) {
-		return $this->parked_admin_bar;
-	}
-	
+		
 	function on_admin_menu() {
 		//load the personal profile setting extension if needed
 		if ($this->options->enable_profile_extension) { 
@@ -346,6 +399,58 @@ class wp_native_dashboard {
 		add_meta_box('wp-native-dashboard-acl', __('Capabilities', 'wp-native-dashboard'), array(&$this, 'on_print_metabox_content_acl'), $this->pagehook, 'normal', 'core');		
 		add_meta_box('wp-native-dashboard-installed-i18n', __('Installed Languages', 'wp-native-dashboard'), array(&$this, 'on_print_metabox_installed_i18n'), $this->pagehook, 'normal', 'core');
 		add_meta_box('wp-native-dashboard-download-i18n', __('Downloads', 'wp-native-dashboard').' <small style="font-weight:normal;">(<i>svn.automattic.com</i>)</small>', array(&$this, 'on_print_metabox_automattic_i18n'), $this->pagehook, 'normal', 'core');
+		global $wp_version;
+		if (version_compare($wp_version, '3.3', '>=')) {
+			$screen = get_current_screen();
+			//$request = unserialize(csp_fetch_remote_content('http://api.wordpress.org/plugins/info/1.0/codestyling-localization'));
+			$screen->add_help_tab(array(
+				'title' => __('Overview','wp-native-dashboard'),
+				'id' => 'overview',
+				'content' => '',
+				'callback' => array($this, 'on_callback_help_overview')
+			));		
+			$screen->add_help_tab(array(
+				'title' => __('Template Tags','wp-native-dashboard'),
+				'id' => 'template_tags',
+				'content' => '',
+				'callback' => array($this, 'on_callback_help_template_tags')
+			));		
+		}
+	}
+	
+	function on_callback_help_overview() {
+?>
+	<p>
+		<strong>WP Native Dashboard </strong> - <em>"<?php _e('... use your backend with your prefered language', "wp-native-dashboard"); ?>"</em>
+	</p>
+	<p>
+	<?php _e('While get in touch with WordPress you will find out, that the initial delivery package comes only with english localization. If you want WordPress to show your native language, you have to provide the appropriated language file at languages folder. This files will be used to replace the english text phrases during the process of page generation. This translation capability has the origin at the gettext functionality which currently been used across a wide range of open source projects.', "wp-native-dashboard"); ?>
+	</p>
+	<p style="margin-top: 50px;padding-top:10px; border-top: solid 1px #ccc;">
+		<small class="alignright" style="position:relative; margin-top: -30px; color: #aaa;">&copy; 2008 - 2013 by Heiko Rabe</small>
+		<a href="http://wordpress.org/extend/plugins/wp-native-dashboard/" target="_blank">Plugin Directory</a> | 
+		<a href="http://wordpress.org/extend/plugins/wp-native-dashboard/changelog/" target="_blank">Change Logs</a> | 
+		<a href="<?php echo $this->plugin_url."/license.txt";?>" target="_blank">License</a> 
+		<a class="alignright" href="http://wordpress.org/extend/plugins/codestyling-localization/" target="_blank"><?php _e('Translate WordPress, Themes and Plugins into your Language',"wp-native-dashboard");?></a>
+	</p>
+<?php
+	}	
+	
+	function on_callback_help_template_tags() {
+?>
+	<p>
+		<strong><?php _e('Template Tags within your Plugins or Themes',"wp-native-dashboard"); ?></strong>
+	</p>
+	<p>
+		<?php _e('If you need the select box from normal login screen within your own login implementation, you can activate the template tags for. Add the following codelines into your widget, template or whereever required.',"wp-native-dashboard"); ?>
+	</p>
+	<pre>
+	&lt;?php 
+		if (function_exists('wp_native_dashboard_custom_language_selector')) 
+			wp_native_dashboard_custom_language_selector(); 
+	?&gt;
+	</pre>
+<?php
 	}
 
 	function on_print_metabox_content_acl($data) {
@@ -353,7 +458,12 @@ class wp_native_dashboard {
 			<p>
 				<input id="enable_login_selector" type="checkbox" value="1" name="enable_login_selector"<?php if ($this->options->enable_login_selector) echo ' checked="checked"'; ?> />
 				<?php _e('extend the <em>WordPress Logon Screen</em> to choose a language too.', "wp-native-dashboard"); ?>
-			</p><p>
+			</p>
+			<p style="margin-left: 16px;">
+				<input id="enable_login_custom" type="checkbox" value="1" name="enable_login_custom"<?php if ($this->options->enable_login_custom) echo ' checked="checked"'; ?> />
+				<?php _e('enable template tag usage of login selector (see help screen).', "wp-native-dashboard"); ?>
+			</p>
+			<p>
 				<input id="enable_profile_extension" type="checkbox" value="1" name="enable_profile_extension"<?php if ($this->options->enable_profile_extension) echo ' checked="checked"'; ?> />
 				<?php _e('extend <a href="profile.php" target="_blank">Personal Profile Settings</a> with users prefered language.', "wp-native-dashboard"); ?>
 			</p>
@@ -372,13 +482,17 @@ class wp_native_dashboard {
 				<input id="translate_front_adminbar" type="checkbox" value="1" name="translate_front_adminbar"<?php if ($this->options->translate_front_adminbar) echo ' checked="checked"'; ?> />
 				<?php _e('translate <em>Frontend Admin Bar</em> using backend selected language.', "wp-native-dashboard"); ?>
 			</p>
+			<p>
+				<input id="enable_locale_abbreviations" type="checkbox" value="1" name="enable_locale_abbreviations"<?php if ($this->options->enable_locale_abbreviations) echo ' checked="checked"'; ?> />
+				<?php _e('enable locale abbreviations behind the language name.', "wp-native-dashboard"); ?>
+			</p>
 			<?php endif; ?>
 			<p class="csp-read-more">
 				<em><a href="javascript:void(0)" onclick="jQuery(this).slideUp();jQuery('#wpf-languages').slideDown();"><?php _e('read more &raquo;', "wp-native-dashboard"); ?></a><span id="wpf-languages" style="display:none;"><?php _e('If you are using one of the current available <a href="http://wordpress.org/extend/plugins/search.php?q=multilingual" target="_blank">multilingual plugins</a>, which permits you writing and publishing posts in several languages, you may also have the need, that native speaking authors should be able to choose their prefered backend language while writing. It\'s your decision if and how this will be possible. This feature set does not impact your frontend language (defined by config or by any multilingual plugin).', "wp-native-dashboard"); ?></span></em>
 			</p>
 		<?php
 	}
-
+	
 	function on_print_metabox_installed_i18n() {
 		$installed = wp_native_dashboard_collect_installed_languages();
 		?>
@@ -478,7 +592,7 @@ class wp_native_dashboard {
 						<?php do_meta_boxes($this->pagehook, 'normal', $data); ?>
 						<br/>
 						<p class="csp-read-more">
-							<span class="alignright csp-copyright">copyright &copy 2008 - 2012 by Heiko Rabe</span>
+							<span class="alignright csp-copyright">copyright &copy 2008 - 2013 by Heiko Rabe</span>
 							<label for="cleanup_on_deactivate" class="alignleft">
 								<input id="cleanup_on_deactivate" type="checkbox" value="1" name="cleanup_on_deactivate"<?php if ($this->options->cleanup_on_deactivate) echo ' checked="checked"'; ?> />
 								<span class="csp-warning"><?php _e('cleanup all settings at plugin deactivation.', 'wp-native-dashboard'); ?></span>
