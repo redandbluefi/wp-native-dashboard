@@ -51,7 +51,7 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 
 = Version 1.3.11 =
 * feature: showing page language at frontend admin bar, if admin bar should be displayed with backend language
-* bugfix: compatibility with WordPress 3.6
+* bugfix: compatibility with WordPress 3.6, avoid non object access
 
 = Version 1.3.10 =
 * bugfix: ajax based login plugins (sidebar logins) did not work as expected
