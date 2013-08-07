@@ -3,7 +3,7 @@ Contributors: codestyling
 Tags: wordpress, dashboard, multi-lingual, languages, backend, localization, plugin
 Requires at least: 2.7
 Tested up to: 3.6
-Stable tag: 1.3.11
+Stable tag: 1.3.12
 
 Enables selection of administration language either by logon, dashboard quick switcher or user profile setting.
 
