@@ -272,7 +272,7 @@ class wp_native_dashboard {
 	}
 	
 	function on_admin_init() { 
-		//do all stuff while we are at admin center
+		//do all stuff while we are at admin center, 3.6 compatibility
 		if (is_admin()) {
 			//load the language switcher ajax module if it has been enabled to provide the dropdown extenstion 
 			if ($this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) { 
