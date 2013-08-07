@@ -48,6 +48,8 @@ Please visit [the official website](http://www.code-styling.de/english/developme
 1. Navigate to your Dashboard and enjoy status informations
 
 == Changelog ==
+= Version 1.3.12 =
+* noop: created to solve the wordpress.org packaging issue for *.zip files
 
 = Version 1.3.11 =
 * feature: showing page language at frontend admin bar, if admin bar should be displayed with backend language

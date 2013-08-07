@@ -5,7 +5,7 @@ Plugin URI: http://www.code-styling.de/english/development/wordpress-plugin-wp-n
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.11
+Version: 1.3.12
 Text Domain: wp-native-dashboard
 
 License:
