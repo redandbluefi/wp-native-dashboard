@@ -23,6 +23,47 @@ class wp_native_dashboard_automattic {
 		add_action('wp_ajax_wp_native_dashboard_download_language', array(&$this, 'on_ajax_wp_native_dashboard_download_language'));
 	}
 	
+	function _snitch_off() {
+		$snitch = remove_filter(
+			'pre_http_request',
+			array(
+				'Snitch_HTTP',
+				'inspect_request'
+			), 10
+		);
+		if ($snitch) {
+			remove_action(
+				'http_api_debug',
+				array(
+					'Snitch_HTTP',
+					'log_response'
+				),
+				10
+			);
+		}
+		return $snitch;
+	}
+	
+	function _snitch_on() {
+		add_filter(
+			'pre_http_request',
+			array(
+				'Snitch_HTTP',
+				'inspect_request'
+			),
+			10,
+			3
+		);
+		remove_action(
+			'http_api_debug',
+			array(
+				'Snitch_HTTP',
+				'log_response'
+			),
+			10
+		);
+	}
+	
 	function on_admin_head() {
 		?>
 		<script  type="text/javascript">
@@ -258,7 +299,9 @@ class wp_native_dashboard_automattic {
 		$revision 	= 0;
 		$langs 		= $installed;
 		$url 		= 'http://svn.automattic.com/wordpress-i18n/';
+		$snitch = $this->_snitch_off();
 		$response = @wp_remote_get($url);
+		if ($snitch) $this->_snitch_on();
 		$error = is_wp_error($response);
 		if(!$error) {
 			$lines = split("\n",$response['body']);
@@ -295,13 +338,24 @@ class wp_native_dashboard_automattic {
 	}
 	
 	function on_ajax_wp_native_dashboard_check_language() {
+		//disable snitch
+		$snitch = remove_filter(
+			'pre_http_request',
+			array(
+				'Snitch_HTTP',
+				'inspect_request'
+			), 10
+		);
+		
 		$lang 			= $_POST['language'];
 		$row 			= $_POST['row'];
 		$ver			= isset($_POST['ver']) ? $_POST['ver'] : $this->root_tagged_version;
 		$installed 		= wp_native_dashboard_collect_installed_languages();
 		$url 			= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$this->tagged_version."/messages/";
 		$url_root		= "http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$ver."/messages/";
+		$snitch = $this->_snitch_off();
 		$response_mo 	= @wp_remote_get($url);
+		if ($snitch) $this->_snitch_on();
 		$found 			= false;
 		$tagged			= $this->tagged_version;
 		
@@ -312,12 +366,26 @@ class wp_native_dashboard_automattic {
 		if ($found === false) {
 			$url = $url_root;
 			$tagged	= $ver;
+			$snitch = $this->_snitch_off();
 			$response_mo = @wp_remote_get($url);
+			if($snitch) $this->_snitch_on();
 			if (!is_wp_error($response_mo)&&($response_mo['response']['code'] != 404)){
 				if (preg_match("/href\s*=\s*\"".$lang."\.mo\"/", $response_mo['body'])) 
 					$found = true;
 			}
 		}
+		//add snitch again if present
+		if ($snitch) {
+			add_filter(
+				'pre_http_request',
+				array(
+					'Snitch_HTTP',
+					'inspect_request'
+				),
+				10,
+				3
+			);
+		}		
 		if ($found === false) exit();
 		$url .= $lang.'.mo';
 		?>
@@ -450,8 +518,10 @@ class wp_native_dashboard_automattic {
 			if (preg_match('/\/tags\/(\d+\.\d+|\d+\.\d+\.\d+)\/messages/', $_POST['file'], $h)) {
 				$tagged = $h[1];
 			}
-			
+			//disable snitch
+			$snitch = $this->_snitch_off();
 			$response_mo = @wp_remote_get("http://svn.automattic.com/wordpress-i18n/".$lang."/tags/".$tagged."/messages/".$file);
+			if ($snitch) $this->_snitch_on();
 			if(!is_wp_error($response_mo) && ($response_mo['response']['code'] != 404)) {
 				ob_start();
 				if ( WP_Filesystem($credentials) && is_object($wp_filesystem) ) {
@@ -525,10 +595,14 @@ class wp_native_dashboard_automattic {
 						
 						foreach($additional_download_files as $fsf => $desc) {
 							if (version_compare($wp_version, $desc['min-version'], '>=')) {
+								$snitch = $this->_snitch_off();
 								$response_additional = @wp_remote_get($desc['location']);
+								if($snitch) $this->_snitch_on();
 								if(is_wp_error($response_additional)||($response_additional['response']['code'] == 404)) {
 									if ($desc['alternative'] !== false) {
+										$snitch = $this->_snitch_off();
 										$response_additional = @wp_remote_get($desc['alternative']);
+										if($snitch) $this->_snitch_on();
 									}
 								}
 								if(!is_wp_error($response_additional)&&($response_additional['response']['code'] != 404)) {

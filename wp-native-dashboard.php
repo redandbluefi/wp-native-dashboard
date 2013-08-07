@@ -5,7 +5,7 @@ Plugin URI: http://www.code-styling.de/english/development/wordpress-plugin-wp-n
 Description: You can configure your blog working at administration with different languages depends on users choice and capabilities the admin has been enabled.
 Author: Heiko Rabe
 Author URI: http://www.code-styling.de/
-Version: 1.3.10
+Version: 1.3.11
 Text Domain: wp-native-dashboard
 
 License:
@@ -134,7 +134,7 @@ class wp_native_dashboard {
 		preg_match("/^(\d+)\.(\d+)(\.\d+|)/", $wp_version, $hits);
 		$this->root_tagged_version = $hits[1].'.'.$hits[2];
 		$this->tagged_version = $this->root_tagged_version;
-		if (!empty($hits[3])) $this->tagged_version .= '.'.$hits[3];
+		if (!empty($hits[3])) $this->tagged_version .= $hits[3];
 		
 		//register at plugin activation/deactivation hooks
 		register_activation_hook(plugin_basename(__FILE__), array(&$this, 'activate_plugin'));
@@ -145,6 +145,7 @@ class wp_native_dashboard {
 		
 		add_filter('locale', array(&$this, 'on_locale'), 9999);
 		add_action('init', array(&$this, 'on_init'));
+		add_action('admin_init', array(&$this, 'on_admin_init'));
 		add_action('admin_menu', array(&$this, 'on_admin_menu'));
 		//add filter for WordPress 2.8 changed backend box system !
 		add_filter('screen_layout_columns', array(&$this, 'on_screen_layout_columns'), 10, 2);
@@ -162,6 +163,8 @@ class wp_native_dashboard {
 			ob_start();
 			add_action('shutdown', array(&$this, 'on_shutdown_render_admin_bar'), 0);
 		}
+		
+		$this->orig_locale = false;
 				
 	}
 	
@@ -228,8 +231,20 @@ class wp_native_dashboard {
 		}
 	}
 	
+	//add the language if different
+	function on_admin_bar_page_lang() {
+		global $wp_admin_bar;
+		$wp_admin_bar->add_menu( array(
+			'id'     => 'csl-current-locale',
+			'parent' => 'top-secondary',
+			'title'  => '<i style="font-size: 10px;">'.__("Language", "wp-native-dashboard").': </i>'.wp_native_dashboard_get_name_of($this->orig_locale),
+			'meta'   => array( 'class' => '' ),
+		) );
+	}
+	
 	//setup the correct user prefered language
 	function on_locale($loc) {
+		if($this->orig_locale === false) $this->orig_locale = $loc;
 		$skip = !$this->options->enable_login_selector && !$this->options->enable_profile_extension && !$this->options->enable_language_switcher && !$this->options->enable_adminbar_switcher;
 		if ((is_admin() && !$skip) || ($this->options->translate_front_adminbar && $this->user_agent_is_wp_native_dashboard)) {
 			if (function_exists('wp_get_current_user')) {
@@ -256,6 +271,19 @@ class wp_native_dashboard {
 		$this->i18n_loaded = true;
 	}
 	
+	function on_admin_init() { 
+		//do all stuff while we are at admin center
+		if (is_admin()) {
+			//load the language switcher ajax module if it has been enabled to provide the dropdown extenstion 
+			if ($this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) { 
+				require_once(dirname(__FILE__).'/langswitcher.php');
+				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url, $this->options->enable_language_switcher || $this->options->enable_adminbar_switcher, $this->options->enable_adminbar_switcher);
+				$this->_load_translation_file();
+				wp_enqueue_script('jquery');
+			}
+		}		
+	}
+	
 	function on_init() {
 		//some modules need to be loaded here, because they have to support ajax or affect the login page :-)
 		//load the login selector module if it has been enabled to provide language choise at login screen
@@ -271,23 +299,14 @@ class wp_native_dashboard {
 			$this->_load_translation_file();
 			if (is_admin()) wp_enqueue_script('jquery');
 		}
-		//do all stuff while we are at admin center
-		if (is_admin()) {
-			//load the language switcher ajax module if it has been enabled to provide the dropdown extenstion 
-			if ($this->options->enable_language_switcher || $this->options->enable_adminbar_switcher) { 
-				require_once(dirname(__FILE__).'/langswitcher.php');
-				$this->langswitcher = new wp_native_dashboard_langswitcher($this->plugin_url, $this->options->enable_language_switcher || $this->options->enable_adminbar_switcher, $this->options->enable_adminbar_switcher);
-				$this->_load_translation_file();
-				wp_enqueue_script('jquery');
-			}
-		}		
-		
+		////--------------------------
 		//front end admin bar handling
 		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in() && !$this->user_agent_is_wp_native_dashboard) {
 			add_action('wp_before_admin_bar_render', array(&$this, 'on_start_suppress_admin_bar'), 0);
 			add_action('wp_after_admin_bar_render', array(&$this, 'on_request_suppressed_admin_bar_translated'),9999);
 		}
 		if($this->options->translate_front_adminbar && !is_admin() && is_user_logged_in() && $this->user_agent_is_wp_native_dashboard) {
+			add_action('admin_bar_menu', array(&$this, 'on_admin_bar_page_lang'), 999 );
 			add_action('wp_before_admin_bar_render', array(&$this, 'on_start_capture_admin_bar'), 0);
 			add_action('wp_after_admin_bar_render', array(&$this, 'on_end_capture_admin_bar'), 9999);
 		}
