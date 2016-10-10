@@ -102,7 +102,7 @@ function wp_native_dashboard_custom_language_selector() {
 
 class wp_native_dashboard {
 
-	function wp_native_dashboard() {
+	function __construct() {
 		//options defaults
 		$this->defaults 							= new stdClass;
 		$this->defaults->version					= '1.0';
