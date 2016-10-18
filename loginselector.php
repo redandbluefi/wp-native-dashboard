@@ -7,7 +7,7 @@ if (!function_exists ('add_action')) {
 }
 
 class wp_native_dashboard_loginselector {
-	function wp_native_dashboard_loginselector($permit_template_tags) {
+	function __construct($permit_template_tags) {
 		add_action('login_head', array(&$this, 'on_login_head'));
 		if ($permit_template_tags)
 			add_action('wp_head', array(&$this, 'on_login_head'));
