@@ -13,7 +13,7 @@ if (!function_exists('esc_js')) {
 }
 
 class wp_native_dashboard_automattic {
-	function wp_native_dashboard_automattic($tagged, $root_tagged) {
+	function __construct($tagged, $root_tagged) {
 		$this->tagged_version 		= $tagged;
 		$this->root_tagged_version 	= $root_tagged;
 		add_action('admin_head', array(&$this, 'on_admin_head'));
