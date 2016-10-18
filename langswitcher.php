@@ -7,7 +7,7 @@ if (!function_exists ('add_action')) {
 }
 
 class wp_native_dashboard_langswitcher {
-	function wp_native_dashboard_langswitcher($plugin_url, $as_head, $as_admin_bar) {
+	function __construct($plugin_url, $as_head, $as_admin_bar) {
 		global $text_direction;
 		if ($text_direction == 'rtl') 
 			wp_enqueue_style('wp-native-dashboard-css-rtl', $plugin_url.'/css/style-rtl.css');
