@@ -7,7 +7,7 @@ if (!function_exists ('add_action')) {
 }
 
 class wp_native_dashboard_personalprofile {
-	function wp_native_dashboard_personalprofile() {
+	function __construct() {
 		add_action('profile_personal_options', array(&$this, 'on_profile_personal_options'));
 		add_action('personal_options_update', array(&$this, 'on_personal_options_update'));
 	}
