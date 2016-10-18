@@ -87,7 +87,8 @@ function wp_native_dashboard_get_name_of($locale) {
 
 function wp_native_dashboard_is_rtl_language($locale) {
 	$rtl = array('ar', 'ckb', 'fa', 'he', 'ur', 'ug');
-	return in_array(array_shift(split('_',$locale)), $rtl);
+	$array = explode('_',$locale);
+	return in_array(array_shift($array), $rtl);
 }
 
 function wp_native_dashboard_rtl_extension_file_content() {
@@ -544,7 +545,7 @@ class wp_native_dashboard {
 		$error = is_wp_error($response);
 		$versions = array();
 		if(!$error) {
-			$lines = split("\n",$response['body']);
+			$lines = explode("\n",$response['body']);
 			foreach($lines as $line) {
 				if (preg_match("/href\s*=\s*\"(\S+)\/\"/", $line, $hits)) {
 					if (in_array($hits[1], array('..', 'http://subversion.tigris.org'))) continue;
